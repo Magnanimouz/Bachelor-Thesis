@@ -1,0 +1,5 @@
+.idea/
+lib/
+thumbs.db
+*.class
+*.iml

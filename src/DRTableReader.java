@@ -29,6 +29,9 @@ public class DRTableReader extends DoseResponse {
             for (int i = 0; i < numberOfSheets; i++){
                 Sheet sheet = workbook.getSheetAt(i);
                 Iterator rowIterator = sheet.iterator();
+                if (!rowIterator.hasNext()) {
+                    continue;
+                }
 
                 //Skip first two rows.
                 rowIterator.next();
@@ -65,8 +68,6 @@ public class DRTableReader extends DoseResponse {
         else if (check.equals("No")) {table[counter].setMovement(DRTable.Movement.NONE);}
         else if (check.equals("Lower")) {table[counter].setMovement(DRTable.Movement.AFFECTED);}
 
-        nameEffects(counter);
-
         int effect = 0;
         while (effect < 7) {
             double value = ((Cell) cellIterator.next()).getNumericCellValue();
@@ -79,15 +80,5 @@ public class DRTableReader extends DoseResponse {
         if (check.equals("Ok")) {table[counter].setResult(DRTable.Result.ALIVE);}
         else if (check.equals("Lethal")) {table[counter].setResult(DRTable.Result.DEAD);}
         else if (check.equals("Non-lethal")) {table[counter].setResult(DRTable.Result.AFFECTED);}
-    }
-
-    void nameEffects(int counter){
-        table[counter].getEffect(0).setName("Coagulated");
-        table[counter].getEffect(1).setName("Edema");
-        table[counter].getEffect(2).setName("Tail malformation");
-        table[counter].getEffect(3).setName("Head malformation");
-        table[counter].getEffect(4).setName("Altered pigmentation");
-        table[counter].getEffect(5).setName("Eye malformation");
-        table[counter].getEffect(6).setName("Yolksac malformation");
     }
 }

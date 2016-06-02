@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
 
 
@@ -11,31 +12,33 @@ public class DoseResponse extends Layout {
         super();
     }
 
-    public void create(){
-//        try {
-//            Scanner scan = new Scanner(new File("./Resources/Dose Response/Introduction.txt"));
-//            String introduction = scan.useDelimiter("\\A").next();
-//            makeIntroduction(introduction);
-//        } catch (IOException e) {e.printStackTrace();}
-//
-//            //For testing with console output!
-//            //System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
-//
-            answers = makeTable();
-//
-//        for (int i = 0; i < NUMBER_OF_SAMPLES; i++){
-//            String picture = answers[i].getPicture();
-//            DRTable.Heartrate h = answers[i].getHeart();
-//            String heart = h.name();
-//            DRTable.Movement m = answers[i].getMove();
-//            String move = m.name();
-//            student[i] = makeDRQuestion(i, picture, heart, move);
-//
-//        }
+    public void create() {
+        try {
+            Scanner scan = new Scanner(new File("./Resources/Dose Response/Introduction.txt"));
+            String introduction = scan.useDelimiter("\\A").next();
+            makeIntroduction(introduction);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //For testing with console output!
+        //System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+
+        answers = makeTable();
+
+        for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
+            String picture = answers[i].getPicture();
+            DRTable.Heartrate heart = answers[i].getHeart();
+            DRTable.Movement move = answers[i].getMove();
+            String set = answers[i].getSet();
+            Double concentration = answers[i].getConcentration();
+            student[i] = makeDRQuestion(i, picture, heart, move, set, concentration);
+
+        }
         Object[][] answerData = calculateTable(answers);
 
-        String[] columnNames = {"Concentration", "Normal", "Lethal effects", "Non-lethal effects", "%Mortality (only lethal)", "% Affected (non-lethal + lethal)" };
-//        Object[][] studentData = calculateTable(student);
+        String[] columnNames = {"Concentration", "Normal", "Lethal effects", "Non-lethal effects", "%Mortality (only lethal)", "% Affected (non-lethal + lethal)"};
+        Object[][] studentData = calculateTable(student);
 
         Calculation answerCalculations = new Calculation();
         answerCalculations.fill();
@@ -43,7 +46,7 @@ public class DoseResponse extends Layout {
         studentCalculations.calculations = makeDRCalculationQuestion(studentCalculations);
     }
 
-    Object[][] calculateTable(DRTable[] table){
+    Object[][] calculateTable(DRTable[] table) {
         int[] alive = new int[NUMBER_OF_SETS];
         int[] dead = new int[NUMBER_OF_SETS];
         int[] affected = new int[NUMBER_OF_SETS];
@@ -56,7 +59,7 @@ public class DoseResponse extends Layout {
             affected[i] = count(i, DRTable.Result.AFFECTED, table);
             mortality[i] = ((dead[i] / SAMPLES_PER_SET) * 100);
             percentAffected[i] = (((dead[i] + affected[i]) / SAMPLES_PER_SET) * 100);
-            for (int j = 0; j < 5; j++){
+            for (int j = 0; j < 5; j++) {
                 if (j == 0) data[i][j] = alive[i];
                 else if (j == 1) data[i][j] = dead[i];
                 else if (j == 2) data[i][j] = affected[i];
@@ -67,15 +70,15 @@ public class DoseResponse extends Layout {
         return data;
     }
 
-    int count(int set, DRTable.Result sample, DRTable[] table){
+    int count(int set, DRTable.Result sample, DRTable[] table) {
         int count = 0;
-        for (int i = (set*SAMPLES_PER_SET); i < (SAMPLES_PER_SET*(set+1)); i ++){
+        for (int i = (set * SAMPLES_PER_SET); i < (SAMPLES_PER_SET * (set + 1)); i++) {
             if (table[i].getResult() == sample) count++;
         }
         return count;
     }
 
-    DRTable[] makeTable(){
+    DRTable[] makeTable() {
         DRTable[] toFill = new DRTable[NUMBER_OF_SAMPLES];
         for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
             toFill[i] = new DRTable();
@@ -87,124 +90,182 @@ public class DoseResponse extends Layout {
     }
 }
 
-    class DRTable {
-        private final int NUMBER_OF_EFFECTS = 7;
+class DRTable {
+    private final int NUMBER_OF_EFFECTS = 7;
 
-        private String set, picture;
-        private Double concentration;
-        enum Heartrate{NORMAL, AFFECTED, NONE}
+    private String set, picture;
+    private Double concentration;
 
-        enum Movement{NORMAL, AFFECTED, NONE}
+    @Override
+    public String toString() {
+        return "DRTable{" +
+                "NUMBER_OF_EFFECTS=" + NUMBER_OF_EFFECTS +
+                ", set='" + set + '\'' +
+                ", picture='" + picture + '\'' +
+                ", concentration=" + concentration +
+                ", effect=" + Arrays.toString(effect) +
+                ", heart=" + heart +
+                ", move=" + move +
+                ", result=" + result +
+                '}';
+    }
 
-        enum Result{ALIVE, AFFECTED, DEAD}
+    static enum Heartrate {NORMAL, AFFECTED, NONE}
 
-        private Effect[] effect = new Effect[NUMBER_OF_EFFECTS];
+    static enum Movement {NORMAL, AFFECTED, NONE}
 
-        private Heartrate heart;
-        private Movement move;
-        private Result result;
+    static enum Result {ALIVE, AFFECTED, DEAD}
 
-        DRTable() {
-            set = "";
-            picture = "";
-            concentration = 0.0;
-            heart = Heartrate.NORMAL;
-            move = Movement.NORMAL;
-            result = Result.ALIVE;
-            for (int i = 0; i < NUMBER_OF_EFFECTS; i++) { effect[i] = new Effect(); }
+    private Effect[] effect = new Effect[NUMBER_OF_EFFECTS];
+
+    private Heartrate heart;
+    private Movement move;
+    private Result result;
+
+    DRTable() {
+        set = "";
+        picture = "";
+        concentration = 0.0;
+        heart = Heartrate.NORMAL;
+        move = Movement.NORMAL;
+        result = Result.ALIVE;
+        for (int i = 0; i < NUMBER_OF_EFFECTS; i++) {
+            effect[i] = new Effect();
         }
+        nameEffects();
+    }
 
-        /*getters*/
-        String getSet() {return this.set;}
+    void nameEffects(){
+        effect[0].setName("Coagulated");
+        effect[1].setName("Edema");
+        effect[2].setName("Tail malformation");
+        effect[3].setName("Head malformation");
+        effect[4].setName("Altered pigmentation");
+        effect[5].setName("Eye malformation");
+        effect[6].setName("Yolksac malformation");
+    }
 
-        String getPicture() {return this.picture;}
+    /*getters*/
+    String getSet() {
+        return this.set;
+    }
 
-        Double getConcentration() {return this.concentration;}
+    String getPicture() {
+        return this.picture;
+    }
 
-        Effect getEffect(int number) {return this.effect[number];}
+    Double getConcentration() {
+        return this.concentration;
+    }
 
-        Heartrate getHeart() {return this.heart;}
+    Effect getEffect(int number) {
+        return this.effect[number];
+    }
 
-        Movement getMove() {return this.move;}
+    Heartrate getHeart() {
+        return this.heart;
+    }
 
-        Result getResult() {return this.result;}
+    Movement getMove() {
+        return this.move;
+    }
+
+    Result getResult() {
+        return this.result;
+    }
 
         /*setters*/
 
-        void setSet(String set) {this.set = set;}
+    void setSet(String set) {
+        this.set = set;
+    }
 
-        void setPicture(String picture) {this.picture = picture;}
+    void setPicture(String picture) {
+        this.picture = picture;
+    }
 
-        void setConcentration(Double concentration) {this.concentration = concentration;}
+    void setConcentration(Double concentration) {
+        this.concentration = concentration;
+    }
 
-        void setHeartrate(Heartrate value) {heart = value;}
+    void setHeartrate(Heartrate value) {
+        heart = value;
+    }
 
-        void setMovement(Movement value) {move = value;}
+    void setMovement(Movement value) {
+        move = value;
+    }
 
-        void setResult(Result value) {result = value;}
+    void setResult(Result value) {
+        result = value;
+    }
 
-        class Effect{
-            private String name;
-            private boolean status;
+    class Effect {
+        private String name;
+        private boolean status;
 
-            Effect() {
-                name = "";
-                status = false;
-            }
+        Effect() {
+            name = "";
+            status = false;
+        }
 
             /*getters*/
 
-            String getName() {return this.name;}
+        String getName() {
+            return this.name;
+        }
 
-            boolean getStatus() {return this.status;}
+        boolean getStatus() {
+            return this.status;
+        }
 
             /*setters*/
 
-            String setName(String name) {return this.name = name;}
+        String setName(String name) {
+            return this.name = name;
+        }
 
-            boolean setStatus(boolean status) {return this.status = status;}
+        boolean setStatus(boolean status) {
+            return this.status = status;
+        }
+    }
+}
+
+class Calculation {
+    private final double tempVar = 0;
+    private final int NUMBER_OF_CALCULATIONS = 5;
+    String[] names = new String[NUMBER_OF_CALCULATIONS], descriptions = new String[NUMBER_OF_CALCULATIONS];
+    double[] calculations = new double[NUMBER_OF_CALCULATIONS];
+
+    Calculation() {
+        for (int i = 0; i < NUMBER_OF_CALCULATIONS; i++) {
+            if (i == 0) {
+                names[i] = "NOEC";
+                descriptions[i] = "NOEC: \n Highest concentration with no effects compared to the control group.";
+            } else if (i == 1) {
+                names[i] = "LOEC";
+                descriptions[i] = "LOEC: \n Lowest concentration with effects compared to the control group.";
+            } else if (i == 2) {
+                names[i] = "LC50";
+                descriptions[i] = "LC50: \n Concentration where 50% of the treated embryos are dead.";
+            } else if (i == 3) {
+                names[i] = "EC50";
+                descriptions[i] = "EC50: \n Concentration where 50% of the treated embryos are affected (malformed and dead).";
+            } else if (i == 4) {
+                names[i] = "TI";
+                descriptions[i] = "TI: \n Teratogenic Index = LC50/EC50.";
+            }
         }
     }
 
-    class Calculation {
-        private final double tempVar = 0;
-        private final int NUMBER_OF_CALCULATIONS = 5;
-        String[] names = new String[NUMBER_OF_CALCULATIONS], descriptions = new String[NUMBER_OF_CALCULATIONS];
-        double[] calculations = new double[NUMBER_OF_CALCULATIONS];
-
-        Calculation() {
-            for (int i = 0; i < NUMBER_OF_CALCULATIONS; i++){
-                if (i == 0) {
-                    names[i] = "NOEC";
-                    descriptions[i] = "NOEC: \n Highest concentration with no effects compared to the control group.";
-                }
-                else if (i == 1) {
-                    names[i] = "LOEC";
-                    descriptions[i] = "LOEC: \n Lowest concentration with effects compared to the control group.";
-                }
-                else if (i == 2) {
-                    names[i] = "LC50";
-                    descriptions[i] = "LC50: \n Concentration where 50% of the treated embryos are dead.";
-                }
-                else if (i == 3) {
-                    names[i] = "EC50";
-                    descriptions[i] = "EC50: \n Concentration where 50% of the treated embryos are affected (malformed and dead).";
-                }
-                else if (i == 4) {
-                    names[i] = "TI";
-                    descriptions[i] = "TI: \n Teratogenic Index = LC50/EC50.";
-                }
-            }
+    void fill() {
+        for (int i = 0; i < NUMBER_OF_CALCULATIONS; i++) {
+            if (i == 0) this.calculations[i] = tempVar;
+            else if (i == 1) this.calculations[i] = tempVar;
+            else if (i == 2) this.calculations[i] = tempVar;
+            else if (i == 3) this.calculations[i] = tempVar;
+            else if (i == 4) this.calculations[i] = tempVar;
         }
 
-        void fill(){
-            for (int i = 0; i < NUMBER_OF_CALCULATIONS; i++){
-                if (i == 0) this.calculations[i] = tempVar;
-                else if (i == 1) this.calculations[i] = tempVar;
-                else if (i == 2) this.calculations[i] = tempVar;
-                else if (i == 3) this.calculations[i] = tempVar;
-                else if (i == 4) this.calculations[i] = tempVar;
-            }
-
-        }
     }
+}

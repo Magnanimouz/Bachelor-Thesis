@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.*;
 
 public class Window extends JFrame {
     private JFrame window;
@@ -17,16 +18,18 @@ public class Window extends JFrame {
     private JTextArea console;
     private GridBagConstraints constraints;
     private GridBagLayout formation;
-    Boolean proceed = false;
+
+    HashMap<String, JCheckBox[]> checkboxes;
+    HashMap<String, ButtonGroup> radiobuttons;
+    volatile boolean proceed = false;
 
     Window(GridBagLayout formation){
         this.formation = formation;
-        setup();
     }
 
     void setup(){
         this.window = new JFrame("Homework");
-        this.window.setDefaultCloseOperation(3);
+        this.window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.window.setLocation(100, 50);
         this.window.setSize(1600, 900);
         this.main = new JPanel(formation);
@@ -34,8 +37,11 @@ public class Window extends JFrame {
         this.main.setPreferredSize(new Dimension(1200, 800));
         this.constraints = new GridBagConstraints();
         this.constraints.insets = new Insets(20, 20, 20, 20);
-        JScrollPane scrollable = new JScrollPane(this.main, 22, 32);
+        JScrollPane scrollable = new JScrollPane(this.main, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         this.window.add(scrollable);
+        checkboxes = new HashMap<>();
+        radiobuttons = new HashMap<>();
+        proceed = false;
     }
 
     JButton reset(){
@@ -54,12 +60,10 @@ public class Window extends JFrame {
     JButton submit(){
         proceed = false;
         button = new JButton("Submit");
-        button.addActionListener(new ActionListener(){
-            public void actionPerformed (ActionEvent e){
-                //Take all stored variables from Radio's and Checkboxes and throw back to calling function.
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
 
                 window.setVisible(false);
-                setup();
                 proceed = true;
             }
         });
@@ -67,6 +71,7 @@ public class Window extends JFrame {
     }
 
     public void showIntroduction(String introduction){
+        setup();
         console = setShowText("Introduction", 800, 400);
         main.add(console, constraints);
         System.out.println(introduction);
@@ -95,7 +100,7 @@ public class Window extends JFrame {
         choice.setBackground(Color.WHITE);
         JPanel content = new JPanel(formation);
         content.setBackground(Color.WHITE);
-        JLabel id = new JLabel(name);
+        JLabel id = new JLabel(name+":");
         if (type.equals("Radio")) {
             JRadioButton[] array = new JRadioButton[options];
             for (int i = 0; i < options; i++) {
@@ -103,46 +108,34 @@ public class Window extends JFrame {
                 array[i] = new JRadioButton(radioName);
                 array[i].setBackground(Color.WHITE);
                 array[i].setActionCommand(radioName);
-                array[i].addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        //Store variable of Radio button
-                        //Allow submit button to throw it back to calling function.
-                    }
-                });
+                array[i].setName(radioName);
+
             }
             ButtonGroup buttons = new ButtonGroup();
             for (int i = 0; i < options; i++) {
                 buttons.add(array[i]);
                 content.add(array[i]);
             }
+            radiobuttons.put(name, buttons);
         }
         else if (type.equals("Check")) {
             checkConstraints.gridy = 0;
             JCheckBox[] effects = new JCheckBox[options];
             for (int i = 0; i < options; i++) {
-                String checkName = choices[i];
+                final String checkName = choices[i];
                 effects[i] = new JCheckBox(checkName);
+                effects[i].setName(checkName);
                 effects[i].setBackground(Color.WHITE);
-                effects[i].addItemListener(new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        Object source = e.getItemSelectable();
-
-                        if (source == checkName){
-                            //Store variable of each effect checkbox
-                            //Allow submit button to throw it back to calling function.
-                        }
-                    }
-                });
             }
+
+            checkboxes.put(name, effects);
             for (int i = 0; i < options; i++) {
                 content.add(effects[i], checkConstraints);
                 checkConstraints.gridy++;
             }
         }
         else if (type.equals("State")){
-            content.add(new JLabel(choices[0]));
+            content.add(new JLabel(choices[0]+":"));
         }
         constraints.gridx = 0;
         constraints.gridy = position;
@@ -199,8 +192,28 @@ public class Window extends JFrame {
         console.setEditable(false);
         PrintStream consoleOut = new PrintStream(new CustomOutputStream(console));
         System.setOut(consoleOut);
-        System.setErr(consoleOut);
         return console;
+    }
+
+    public DRTable getDRAnswer() {
+        DRTable fuck = new DRTable();
+        for (Map.Entry<String, JCheckBox[]> swag : checkboxes.entrySet()) {
+            for (JCheckBox yolo : swag.getValue()) {
+                System.err.printf("Checkbox %s [%s]: %s\n", swag.getKey(), yolo.getName(), yolo.isSelected());
+            }
+        }
+
+        for (Map.Entry<String, ButtonGroup> radios : radiobuttons.entrySet()) {
+            String result = null;
+            Enumeration<AbstractButton> enumer = radios.getValue().getElements();
+            while (enumer.hasMoreElements()) {
+                AbstractButton radio = enumer.nextElement();
+                if (radio.isSelected())
+                    result = radio.getName();
+            }
+            System.err.printf("Radiogroup %s: %s\n", radios.getKey(), result);
+        }
+        return null;
     }
 
 }

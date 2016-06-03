@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +14,7 @@ import java.util.*;
 
 public class Window extends JFrame {
     private JFrame window;
-    private JPanel main, choices, background, center, question;
+    private JPanel main, choices, background, center, questions;
     private JButton button;
     private JTextArea console;
     private GridBagConstraints constraints;
@@ -34,7 +35,7 @@ public class Window extends JFrame {
         this.window.setSize(1600, 900);
         this.main = new JPanel(formation);
         this.main.setBackground(Color.WHITE);
-        this.main.setPreferredSize(new Dimension(1200, 800));
+        this.main.setPreferredSize(new Dimension(1500, 800));
         this.constraints = new GridBagConstraints();
         this.constraints.insets = new Insets(20, 20, 20, 20);
         JScrollPane scrollable = new JScrollPane(this.main, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -42,6 +43,10 @@ public class Window extends JFrame {
         checkboxes = new HashMap<>();
         radiobuttons = new HashMap<>();
         proceed = false;
+
+        makeConditionPane();
+        makeCenterPane();
+        makeBackgroundPane();
     }
 
     JButton reset(){
@@ -91,7 +96,24 @@ public class Window extends JFrame {
     public void makeConditionPane(){
         choices = new JPanel(formation);
         choices.setBackground(Color.WHITE);
-        this.choices.setPreferredSize(new Dimension(350, 800));
+        choices.setPreferredSize(new Dimension(350, 800));
+    }
+
+    public void makeCenterPane(){
+        center = new JPanel(new BorderLayout());
+        center.setBackground(Color.WHITE);
+        center.setPreferredSize(new Dimension(800, 800));
+    }
+
+    public void makeBackgroundPane(){
+        background = new JPanel(formation);
+        background.setBackground(Color.WHITE);
+        background.setPreferredSize(new Dimension(350, 800));
+    }
+
+    public void makeQuestionsPane(){
+        questions = new JPanel(formation);
+        questions.setBackground(Color.WHITE);
     }
 
     public void fillCondition(String type, int options, String name, String[] choices, int position){
@@ -151,27 +173,25 @@ public class Window extends JFrame {
             BufferedImage pic = ImageIO.read(new File(path));
             JLabel image = new JLabel(new ImageIcon(pic));
             image.setBackground(Color.WHITE);
-            center = new JPanel(formation);
-            center.setBackground(Color.WHITE);
             center.add(image, constraints);
             addToMain(1, center);
         } catch (IOException e) {e.printStackTrace();}
     }
 
-    public void showOpenQuestion(String question, int pos){
-        /*POSITIONING BETTER*/
+    public void showOpenQuestion(String input, int pos){
+        /*Answer below question, and better editable field, and colors*/
+        JPanel question = new JPanel(formation);
         constraints.gridy = pos;
-        this.question = new JPanel(formation);
         JTextArea answer = new JTextArea("Answer:");
-        JLabel name = new JLabel(question);
-        this.question.add(answer, constraints);
-        this.question.add(name, constraints);
-        addToMain(0, this.question);
+        JLabel name = new JLabel(input);
+        question.add(name);
+        question.add(answer);
+        questions.add(question, constraints);
+        center.add(questions, BorderLayout.EAST);
+        addToMain(0, center);
     }
 
     public void showBackground(String text){
-        background = new JPanel(formation);
-        background.setBackground(Color.WHITE);
         console = setShowText("Background", 350, 800);
         background.add(console);
         System.out.println(text);
@@ -184,6 +204,14 @@ public class Window extends JFrame {
     }
 
     public void showWindow() {this.window.setVisible(true);}
+
+    public void presentTable(String[] columns, Object[][] data) {
+        /*SET SIZE!!*/
+        JTable table = new JTable(data, columns);
+        JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        center.add(tableHolder, BorderLayout.CENTER);
+        addToMain(0, center);
+    }
 
     JTextArea setShowText(String type, int xSize, int ySize){
         console = new JTextArea(" - " + type + " - \n");
@@ -199,21 +227,34 @@ public class Window extends JFrame {
         DRTable fuck = new DRTable();
         for (Map.Entry<String, JCheckBox[]> swag : checkboxes.entrySet()) {
             for (JCheckBox yolo : swag.getValue()) {
-                System.err.printf("Checkbox %s [%s]: %s\n", swag.getKey(), yolo.getName(), yolo.isSelected());
+                if (yolo.isSelected()) fuck.getEffectByName(yolo.getName()).setStatus(true);
             }
         }
 
         for (Map.Entry<String, ButtonGroup> radios : radiobuttons.entrySet()) {
-            String result = null;
+            String result = "";
             Enumeration<AbstractButton> enumer = radios.getValue().getElements();
             while (enumer.hasMoreElements()) {
                 AbstractButton radio = enumer.nextElement();
-                if (radio.isSelected())
+                if (radio.isSelected()) {
                     result = radio.getName();
+                }
             }
-            System.err.printf("Radiogroup %s: %s\n", radios.getKey(), result);
+            switch (result){
+                case "Alive":
+                    fuck.setResult(DRTable.Result.ALIVE);
+                    break;
+                case "Affected":
+                    fuck.setResult(DRTable.Result.AFFECTED);
+                    break;
+                case "Dead":
+                    fuck.setResult(DRTable.Result.DEAD);
+                    break;
+            }
         }
-        return null;
+        return fuck;
     }
+
+
 
 }

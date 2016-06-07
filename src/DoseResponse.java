@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class DoseResponse {
 
     private final int NUMBER_OF_SAMPLES = 84, SAMPLES_PER_SET = 12, NUMBER_OF_SETS = 7;
+    private final String[] columnNames = {"Concentration", "Normal", "Lethal effects", "Non-lethal effects", "%Mortality (only lethal)", "% Affected (non-lethal + lethal)"};
     private Window window;
     DRTable[] answers, student;
 
@@ -19,47 +20,55 @@ public class DoseResponse {
         try {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Introduction.txt"));
             String introduction = scan.useDelimiter("\\A").next();
+            scan.close();
             makeIntroduction(introduction);
         } catch (IOException e) {e.printStackTrace();}
+
+        this.window.setup();
 
         answers = makeTable();
         student = new DRTable[NUMBER_OF_SAMPLES];
 
-//        for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
-//            String picture = answers[i].getPicture();
-//            DRTable.Heartrate heart = answers[i].getHeart();
-//            DRTable.Movement move = answers[i].getMove();
-//            String set = answers[i].getSet();
-//            Double concentration = answers[i].getConcentration();
-//            student[i] = makeDRQuestion(i, picture, heart, move, set, concentration);
-//        }
+        for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
+            String picture = answers[i].getPicture();
+            DRTable.Heartrate heart = answers[i].getHeart();
+            DRTable.Movement move = answers[i].getMove();
+            String set = answers[i].getSet();
+            Double concentration = answers[i].getConcentration();
+            student[i] = makeDRQuestion(i, picture, heart, move, set, concentration);
+        }
 
-        String[] columnNames = {"Concentration", "Normal", "Lethal effects", "Non-lethal effects", "%Mortality (only lethal)", "% Affected (non-lethal + lethal)"};
+        this.window.setup();
+
         Object[][] answerData = calculateTable(answers);
-        //Object[][] studentData = calculateTable(student);
+        Object[][] studentData = calculateTable(student);
 
-        this.window.makeCenterPane();
-        this.window.presentTable(columnNames, answerData);
+        showGraph(columnNames, studentData);
 
+        this.window.setup();
+
+        this.window.presentTable(columnNames, studentData);
         Calculation answerCalculations = new Calculation();
         answerCalculations.fillAnswers();
         Calculation studentCalculations = new Calculation();
         studentCalculations.calculations = makeDRCalculationQuestion(studentCalculations);
-        this.window.showWindow();
+
+        this.window.setup();
+
+        compareWithAnswers(answerData, studentData, answerCalculations, studentCalculations);
     }
 
-    public void makeIntroduction(String introduction) {
+    void makeIntroduction(String introduction) {
         try {
             this.window.showIntroduction(introduction);
+            this.window.showWindow();
             while (!this.window.proceed) {
                 Thread.sleep(200);
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        } catch (InterruptedException ignored) {}
     }
 
-    public DRTable makeDRQuestion(int i, String picture, DRTable.Heartrate heart, DRTable.Movement move, String set, Double concentration) {
+    DRTable makeDRQuestion(int i, String picture, DRTable.Heartrate heart, DRTable.Movement move, String set, Double concentration) {
         DRTable submission = new DRTable();
 
         this.window.setup();
@@ -79,6 +88,8 @@ public class DoseResponse {
         try {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Table Question.txt"));
             String background = scan.useDelimiter("\\A").next();
+            scan.close();
+            this.window.makeBackgroundPane();
             this.window.showBackground(background);
 
             this.window.showWindow();
@@ -99,18 +110,49 @@ public class DoseResponse {
         return submission;
     }
 
-    public double[] makeDRCalculationQuestion(Calculation calc) {
+    Double[] makeDRCalculationQuestion(Calculation calc) {
         String instructions = "";
-        double[] answers = new double[5];
+        Double[] answers = new Double[5];
         this.window.makeQuestionsPane();
         for (int i = 0; i < 5; i++) {
             this.window.showOpenQuestion("Calculate " + calc.names[i], i);
-            instructions += (calc.descriptions[i] + "\n");
+            instructions += (calc.descriptions[i] + "\n" + "(Only type numbers)\n");
         }
+        this.window.makeBackgroundPane();
         this.window.showBackground(instructions);
         this.window.showWindow();
 
+        try {
+            while (!this.window.proceed) {
+                Thread.sleep(200);
+            }
+        } catch (InterruptedException ignored) {}
+
+        for (int i = 0; i < this.window.openanswers.size(); i++) {
+            String s = this.window.openanswers.get(i);
+            answers[i] = Double.parseDouble(s);
+        }
         return answers;
+    }
+
+    void compareWithAnswers(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc){
+        Object[][][] data = new Object[2][][];
+        data[0] = answerTable;
+        data[1] = studentTable;
+        String[] names = {"Answers", "Student"};
+        this.window.presentTables(columnNames, data, names);
+        Object[][] openData = new Object[2][];
+        openData[0] = answerCalc.calculations;
+        openData[1] = studentCalc.calculations;
+        this.window.showAnswers(names, answerCalc.names, openData);
+
+        this.window.showWindow();
+
+        try {
+            while (!this.window.proceed) {
+                Thread.sleep(200);
+            }
+        } catch (InterruptedException ignored) {}
     }
 
     Object[][] calculateTable(DRTable[] table) {
@@ -145,6 +187,24 @@ public class DoseResponse {
             if (table[i].getResult() == sample) count++;
         }
         return count;
+    }
+
+    void showGraph(String[] columns, Object[][] table){
+        try {
+            Scanner scan = new Scanner(new File("./Resources/Dose Response/Graph Question.txt"));
+            String text = scan.useDelimiter("\\A").next();
+            scan.close();
+            String path = "./Resources/Dose Response/Dose Response Graph.png";
+            this.window.showPicture(path);
+            this.window.presentTable(columns, table);
+            this.window.showIntroduction(text);
+            this.window.showWindow();
+        } catch (FileNotFoundException e) {e.printStackTrace();}
+        try {
+            while (!this.window.proceed) {
+                Thread.sleep(200);
+            }
+        } catch (InterruptedException ignored) {}
     }
 
     DRTable[] makeTable() {
@@ -315,36 +375,46 @@ class DRTable {
 class Calculation {
     private final int NUMBER_OF_CALCULATIONS = 5;
     String[] names = new String[NUMBER_OF_CALCULATIONS], descriptions = new String[NUMBER_OF_CALCULATIONS];
-    double[] calculations = new double[NUMBER_OF_CALCULATIONS];
+    Double[] calculations = new Double[NUMBER_OF_CALCULATIONS];
 
     Calculation() {
         for (int i = 0; i < NUMBER_OF_CALCULATIONS; i++) {
             if (i == 0) {
                 names[i] = "NOEC";
-                descriptions[i] = "NOEC: \nHighest concentration with no effects compared to the control group.";
+                descriptions[i] = "NOEC: \nHighest concentration with no effects compared to control group";
             } else if (i == 1) {
                 names[i] = "LOEC";
-                descriptions[i] = "LOEC: \nLowest concentration with effects compared to the control group.";
+                descriptions[i] = "LOEC: \nLowest concentration with effects compared to control group";
             } else if (i == 2) {
                 names[i] = "LC50";
-                descriptions[i] = "LC50: \nConcentration where 50% of the treated embryos are dead.";
+                descriptions[i] = "LC50: \nConcentration where 50% of the treated embryos are dead";
             } else if (i == 3) {
                 names[i] = "EC50";
-                descriptions[i] = "EC50: \nConcentration where 50% of the treated embryos are affected (malformed and dead).";
+                descriptions[i] = "EC50: \nConcentration where 50% of the treated embryos are affected (malformed and dead)";
             } else if (i == 4) {
                 names[i] = "TI";
-                descriptions[i] = "TI: \nTeratogenic Index = LC50/EC50.";
+                descriptions[i] = "TI: \nTeratogenic Index = LC50/EC50";
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Calculation{" +
+                "NUMBER_OF_CALCULATIONS=" + NUMBER_OF_CALCULATIONS +
+                ", names=" + Arrays.toString(names) +
+                ", descriptions=" + Arrays.toString(descriptions) +
+                ", calculations=" + Arrays.toString(calculations) +
+                '}';
     }
 
     void fillAnswers() {
         for (int i = 0; i < NUMBER_OF_CALCULATIONS; i++) {
             if (i == 0) this.calculations[i] = 0.06;
             else if (i == 1) this.calculations[i] = 0.15;
-            else if (i == 2) this.calculations[i] = 6;
+            else if (i == 2) this.calculations[i] = 6.0;
             else if (i == 3) this.calculations[i] = 0.2;
-            else if (i == 4) this.calculations[i] = 30;
+            else if (i == 4) this.calculations[i] = 30.0;
         }
 
     }

@@ -12,10 +12,12 @@ public class Main {
         String assignment = choice("assignment");
 
         makeAssignment(assignment);
+        System.exit(0);
     }
 
     static String choice(String option) {
         JFrame choice = new JFrame();
+        choice.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Object[] possibilities =  new Object[1000];
         File input = new File("./Resources/Courses.txt");
         try {
@@ -29,7 +31,9 @@ public class Main {
                         c.useDelimiter(",");
                         possibilities[i] = c.next();
                         i++;
+                        c.close();
                     }
+                    in.close();
                     break;
                 case "assignment":
                     int j = 0;
@@ -45,11 +49,19 @@ public class Main {
                                 j++;
                             }
                         }
+                        a.close();
                     }
+                    in.close();
                     break;
             }
-            String toReturn = (String) JOptionPane.showInputDialog(choice, "Choose " + option + ":\n", option, -1, (Icon) null, possibilities, possibilities[0]);
-            return toReturn;
+            String ret = "";
+            Object toReturn = JOptionPane.showInputDialog(choice, "Choose " + option + ":\n", option, -1, (Icon) null, possibilities, possibilities[0]);
+            if (toReturn.equals(null)) {
+                System.err.println("Incorrect input, or cancelled.");
+                System.exit(1);
+            }
+            else {ret = toReturn.toString();}
+            return ret;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

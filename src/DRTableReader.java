@@ -24,6 +24,7 @@ public class DRTableReader extends DoseResponse {
             int counter = 0;
             fis = new FileInputStream(path);
             Workbook workbook = new XSSFWorkbook(fis);
+            fis.close();
             int numberOfSheets = workbook.getNumberOfSheets();
 
             for (int i = 0; i < numberOfSheets; i++){

@@ -1,1 +1,5 @@
-In this course you will learn how to perform a dose response analysis. To do so you are provided with pictures and relevant data on 48hour exposures. Furthermore you'll find information about the heartbeat and the movements of the exposures in the dose response pictures. Both are required to perform a dose response analysis. To get an idea of how malformations can look the pictures also show commonly induced malformations. For future reference; parts of the embryo that are not visible can be expected to be normal.
+In this course you will learn how to perform a dose response analysis.
+To do so you are provided with pictures and relevant data on 48hour exposures.
+Furthermore you'll find information about the heartbeat and the movements of the exposures in the dose response pictures. Both are required to perform a dose response analysis.
+To get an idea of how malformations can look the pictures also show commonly induced malformations.
+For future reference; parts of the embryo that are not visible can be expected to be normal.

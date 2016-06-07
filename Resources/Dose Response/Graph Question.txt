@@ -1,0 +1,2 @@
+Based on the table presented here; Draw the Dose-response curve for lethal and effected embryos
+(XY-plot; X=concentration, Y=percentage of effected or dead embryos like shown in the figure).

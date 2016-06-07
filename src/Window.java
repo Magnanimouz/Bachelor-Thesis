@@ -1,15 +1,18 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.beans.PropertyChangeListener;
+import java.io.*;
 import java.util.*;
 
 public class Window extends JFrame {
@@ -22,10 +25,13 @@ public class Window extends JFrame {
 
     HashMap<String, JCheckBox[]> checkboxes;
     HashMap<String, ButtonGroup> radiobuttons;
+    ArrayList<String> openanswers;
+
     volatile boolean proceed = false;
 
     Window(GridBagLayout formation){
         this.formation = formation;
+        setup();
     }
 
     void setup(){
@@ -42,11 +48,13 @@ public class Window extends JFrame {
         this.window.add(scrollable);
         checkboxes = new HashMap<>();
         radiobuttons = new HashMap<>();
+        openanswers = new ArrayList<>();
         proceed = false;
 
-        makeConditionPane();
-        makeCenterPane();
         makeBackgroundPane();
+        makeCenterPane();
+        makeQuestionsPane();
+        makeConditionPane();
     }
 
     JButton reset(){
@@ -67,7 +75,6 @@ public class Window extends JFrame {
         button = new JButton("Submit");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 window.setVisible(false);
                 proceed = true;
             }
@@ -75,15 +82,32 @@ public class Window extends JFrame {
         return button;
     }
 
-    public void showIntroduction(String introduction){
-        setup();
-        console = setShowText("Introduction", 800, 400);
-        main.add(console, constraints);
-        System.out.println(introduction);
+    JButton close(){
+        proceed = false;
+        button = new JButton("Close");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                window.setVisible(false);
+                System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+                window.dispose();
+                proceed = true;
+            }
+        });
+        return button;
+    }
+
+    public void showIntroduction(String information){
+        JPanel intro = new JPanel(formation);
+        intro.setBackground(Color.WHITE);
+        intro.setPreferredSize(new Dimension(600, 600));
+        console = setShowText("Information", 800, 400);
+        intro.add(console);
+        System.out.println(information);
         constraints.gridy = 1;
         button = reset();
-        main.add(button, constraints);
-        showWindow();
+        intro.add(button, constraints);
+        center.add(intro, BorderLayout.EAST);
+        addToMain(2, center);
     }
 
     public void addToMain(int pos, JPanel toAdd){
@@ -102,7 +126,7 @@ public class Window extends JFrame {
     public void makeCenterPane(){
         center = new JPanel(new BorderLayout());
         center.setBackground(Color.WHITE);
-        center.setPreferredSize(new Dimension(800, 800));
+        center.setPreferredSize(new Dimension(900, 800));
     }
 
     public void makeBackgroundPane(){
@@ -157,7 +181,7 @@ public class Window extends JFrame {
             }
         }
         else if (type.equals("State")){
-            content.add(new JLabel(choices[0]+":"));
+            content.add(new JLabel(choices[0]));
         }
         constraints.gridx = 0;
         constraints.gridy = position;
@@ -173,21 +197,46 @@ public class Window extends JFrame {
             BufferedImage pic = ImageIO.read(new File(path));
             JLabel image = new JLabel(new ImageIcon(pic));
             image.setBackground(Color.WHITE);
-            center.add(image, constraints);
+            center.add(image, BorderLayout.CENTER);
             addToMain(1, center);
         } catch (IOException e) {e.printStackTrace();}
     }
 
     public void showOpenQuestion(String input, int pos){
-        /*Answer below question, and better editable field, and colors*/
         JPanel question = new JPanel(formation);
-        constraints.gridy = pos;
-        JTextArea answer = new JTextArea("Answer:");
+        constraints.gridx = pos;
+        JTextArea answer = new JTextArea("Type here");
+        answer.setBorder(BorderFactory.createLineBorder(Color.black));
+        input = input + ":";
         JLabel name = new JLabel(input);
-        question.add(name);
-        question.add(answer);
+        constraints.gridy = 0;
+        question.add(name, constraints);
+        constraints.gridy = 1;
+        question.add(answer, constraints);
+        constraints.gridy = 2;
+        button = new JButton("Store");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                BufferedWriter writer;
+                try {
+                    writer = new BufferedWriter(new FileWriter("./Output.txt", false));
+                    answer.write(writer);
+                    writer.close();
+                    File file = new File("./Output.txt");
+                    Scanner scan = new Scanner(file);
+                    String answer = scan.nextLine();
+                    scan.close();
+                    openanswers.add(answer);
+                    file.delete();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        question.add(button, constraints);
+        constraints.gridy = 0;
         questions.add(question, constraints);
-        center.add(questions, BorderLayout.EAST);
+        center.add(questions, BorderLayout.SOUTH);
         addToMain(0, center);
     }
 
@@ -203,14 +252,90 @@ public class Window extends JFrame {
         addToMain(2, background);
     }
 
-    public void showWindow() {this.window.setVisible(true);}
+    public void showAnswers(String[] users, String[] names, Object[][] data){
+        JPanel answers = new JPanel(formation);
+        GridBagConstraints cons = new GridBagConstraints();
+        cons.insets = new Insets(0, 5, 0, 5);
+        constraints.gridy = 0;
+        try {
+            Scanner scan = new Scanner(new File("./Resources/Dose Response/Feedback.txt"));
+            String feedback = scan.useDelimiter("\\A").next();
+            scan.close();
+            JTextArea info = setShowText("Feedback", 400, 200);
+            System.out.println(feedback);
+            background.add(info, constraints);
+        } catch (FileNotFoundException e) {e.printStackTrace();}
+
+        constraints.gridy = 1;
+        for (int i = 0; i < users.length; i++) {
+            JPanel answer = new JPanel(formation);
+            JLabel name = new JLabel(users[i]);
+            for (int j = 0; j < names.length; j++) {
+                JLabel section = new JLabel(names[j]);
+                JLabel input = new JLabel(data[i][j].toString());
+                cons.gridy = 0;
+                answer.add(section, cons);
+                cons.gridy = 1;
+                answer.add(input, cons);
+            }
+
+            cons.gridy = 0;
+            answers.add(name, cons);
+            cons.gridy = 1;
+            answers.add(answer, cons);
+            background.add(answers, constraints);
+
+        }
+        button = close();
+        constraints.gridy = 2;
+        background.add(button, constraints);
+        addToMain(2, background);
+    }
+
+    public void showWindow() {
+        this.window.setVisible(true);
+        this.window.pack();
+    }
 
     public void presentTable(String[] columns, Object[][] data) {
-        /*SET SIZE!!*/
         JTable table = new JTable(data, columns);
+        int[] widths = {80, 50, 100, 120, 150, 180};
+        setTableSize(table, widths);
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        table.setFillsViewportHeight(true);
         JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        center.add(tableHolder, BorderLayout.CENTER);
+        tableHolder.setPreferredSize(new Dimension(700, 135));
+        tableHolder.setMinimumSize(new Dimension(700, 150));
+        center.add(tableHolder, BorderLayout.NORTH);
         addToMain(0, center);
+    }
+
+    public void presentTables(String[] columns, Object[][][] data, String[] names){
+        JPanel tables = new JPanel(formation);
+        tables.setBackground(Color.WHITE);
+        constraints.gridy = 0;
+        for (int i = 0; i < data.length; i++) {
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setMinimumSize(new Dimension(700, 150));
+            JTable table = new JTable(data[i], columns);
+            int[] widths = {80, 50, 100, 120, 150, 180};
+            setTableSize(table, widths);
+            JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            panel.add(tableHolder, BorderLayout.CENTER);
+            panel.add(new JLabel(names[i]), BorderLayout.NORTH);
+            tables.add(panel, constraints);
+            constraints.gridy++;
+        }
+        center.add(tables, BorderLayout.CENTER);
+        addToMain(1, center);
+    }
+
+    void setTableSize(JTable table, int[] widths){
+        TableColumn column = null;
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            column = table.getColumnModel().getColumn(i);
+            column.setPreferredWidth(widths[i]);
+        }
     }
 
     JTextArea setShowText(String type, int xSize, int ySize){
@@ -224,10 +349,10 @@ public class Window extends JFrame {
     }
 
     public DRTable getDRAnswer() {
-        DRTable fuck = new DRTable();
-        for (Map.Entry<String, JCheckBox[]> swag : checkboxes.entrySet()) {
-            for (JCheckBox yolo : swag.getValue()) {
-                if (yolo.isSelected()) fuck.getEffectByName(yolo.getName()).setStatus(true);
+        DRTable answer = new DRTable();
+        for (Map.Entry<String, JCheckBox[]> entry : checkboxes.entrySet()) {
+            for (JCheckBox checkBox : entry.getValue()) {
+                if (checkBox.isSelected()) answer.getEffectByName(checkBox.getName()).setStatus(true);
             }
         }
 
@@ -242,19 +367,17 @@ public class Window extends JFrame {
             }
             switch (result){
                 case "Alive":
-                    fuck.setResult(DRTable.Result.ALIVE);
+                    answer.setResult(DRTable.Result.ALIVE);
                     break;
                 case "Affected":
-                    fuck.setResult(DRTable.Result.AFFECTED);
+                    answer.setResult(DRTable.Result.AFFECTED);
                     break;
                 case "Dead":
-                    fuck.setResult(DRTable.Result.DEAD);
+                    answer.setResult(DRTable.Result.DEAD);
                     break;
             }
         }
-        return fuck;
+        return answer;
     }
-
-
 
 }

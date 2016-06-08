@@ -1,18 +1,37 @@
 import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.Scanner;
+import java.util.logging.*;
 
 public class Main {
 
     private static String course;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception{
+        setLogger();
         course = choice("course");
         String assignment = choice("assignment");
 
         makeAssignment(assignment);
         System.exit(0);
+    }
+
+    static void setLogger() throws Exception{
+        LogManager logManager = LogManager.getLogManager();
+        logManager.reset();
+
+        Handler fileHandler = new FileHandler("./out/Logs.log", 10000, 3, true);
+        fileHandler.setFormatter(new SimpleFormatter());
+        Logger.getLogger("").addHandler(fileHandler);
+
+        Logger logger;
+        LoggingOutputStream los;
+
+        logger = Logger.getLogger("stderr");
+        los= new LoggingOutputStream(logger, StdErrLevel.STDERR);
+        System.setErr(new PrintStream(los, true));
     }
 
     static String choice(String option) {

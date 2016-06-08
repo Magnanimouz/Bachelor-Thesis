@@ -204,7 +204,7 @@ public class Window extends JFrame {
         } catch (IOException e) {e.printStackTrace();}
     }
 
-    public void showOpenQuestion(String input, int pos){
+    public void showOpenQuestion(String input, int pos, boolean number){
         JPanel question = new JPanel(new BorderLayout());
         constraints.gridx = pos;
         JTextArea answer = new JTextArea("Type here", 1, 10);
@@ -213,9 +213,13 @@ public class Window extends JFrame {
         JLabel name = new JLabel(input);
         question.add(name, BorderLayout.NORTH);
         question.add(answer, BorderLayout.CENTER);
-        button = new JButton("Store");
+        JButton button = new JButton("Store");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                if (button.getText().equals("Pressed")) {
+                    JOptionPane.showMessageDialog(null, "Already pressed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 BufferedWriter writer;
                 try {
                     writer = new BufferedWriter(new FileWriter("./Output.txt", false));
@@ -225,11 +229,14 @@ public class Window extends JFrame {
                     Scanner scan = new Scanner(file);
                     String answer = scan.nextLine();
                     scan.close();
-                    if (!isDouble(answer)) {
-                        System.err.printf("Invalid input: \"%s\". Type a number and press store again.\n", answer);
-                        return;
+                    if (number) {
+                        if (!isDouble(answer)) {
+                            System.err.printf("Invalid input: \"%s\". Retry and press store again.\n", answer);
+                            JOptionPane.showMessageDialog(null, "Not a number, re-type and press store again once", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                     }
-                    else System.err.printf("Input stored. Do not answer this question again.\n");
+                    button.setText("Pressed");
                     openanswers.add(answer);
                     file.delete();
                 } catch (IOException e) {

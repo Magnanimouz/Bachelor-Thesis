@@ -1,0 +1,131 @@
+Jun 08, 2016 11:08:25 PM  
+STDERR: Incorrect input, or cancelled.
+Jun 08, 2016 11:09:01 PM  
+STDERR: Incorrect input, or cancelled.
+Jun 08, 2016 11:23:43 PM  
+STDERR: Invalid input: "
+Jun 08, 2016 11:23:43 PM  
+STDERR: Type here
+Jun 08, 2016 11:23:43 PM  
+STDERR: ". Retry and press store again.
+
+Jun 08, 2016 11:23:50 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:23:52 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:23:54 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:23:55 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:23:56 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:28:49 PM  
+STDERR: Invalid input: "
+Jun 08, 2016 11:28:49 PM  
+STDERR: Type here
+Jun 08, 2016 11:28:49 PM  
+STDERR: ". Retry and press store again.
+
+Jun 08, 2016 11:28:52 PM  
+STDERR: Invalid input: "
+Jun 08, 2016 11:28:52 PM  
+STDERR: Type here
+Jun 08, 2016 11:28:52 PM  
+STDERR: ". Retry and press store again.
+
+Jun 08, 2016 11:28:55 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:28:57 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:28:58 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:28:59 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:29:00 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:36:20 PM  
+STDERR: Invalid input: "
+Jun 08, 2016 11:36:20 PM  
+STDERR: Type here
+Jun 08, 2016 11:36:20 PM  
+STDERR: ". Retry and press store again.
+
+Jun 08, 2016 11:36:25 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:36:27 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:36:28 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:36:29 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:36:29 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:36:30 PM  
+STDERR: Invalid input: "
+Jun 08, 2016 11:36:30 PM  
+STDERR: Type here
+Jun 08, 2016 11:36:30 PM  
+STDERR: ". Retry and press store again.
+
+Jun 08, 2016 11:36:31 PM  
+STDERR: Invalid input: "
+Jun 08, 2016 11:36:31 PM  
+STDERR: Type here
+Jun 08, 2016 11:36:31 PM  
+STDERR: ". Retry and press store again.
+
+Jun 08, 2016 11:36:35 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:38:22 PM  
+STDERR: Invalid input: "
+Jun 08, 2016 11:38:22 PM  
+STDERR: Type here
+Jun 08, 2016 11:38:22 PM  
+STDERR: ". Retry and press store again.
+
+Jun 08, 2016 11:38:26 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:38:31 PM  
+STDERR: Input stored. Do not answer this question again.
+
+Jun 08, 2016 11:39:46 PM  
+STDERR: Exception in thread "main" 
+Jun 08, 2016 11:39:46 PM  
+STDERR: java.lang.NullPointerException
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at Window.showAnswers(Window.java:292)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at DoseResponse.compareWithAnswers(DoseResponse.java:147)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at DoseResponse.create(DoseResponse.java:58)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at Main.makeAssignment(Main.java:95)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at Main.main(Main.java:17)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at java.lang.reflect.Method.invoke(Method.java:498)
+Jun 08, 2016 11:39:46 PM  
+STDERR: 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)

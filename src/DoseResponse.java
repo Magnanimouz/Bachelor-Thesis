@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class DoseResponse {
 
-    private final int NUMBER_OF_SAMPLES = 84, SAMPLES_PER_SET = 12, NUMBER_OF_SETS = 7, POSSIBLE_NUMBER_OF_MISTAKES = 17;
+    private final int NUMBER_OF_SAMPLES = 84, SAMPLES_PER_SET = 12, NUMBER_OF_SETS = 7, POSSIBLE_NUMBER_OF_MISTAKES = 20;
     private final String[] columnNames = {"Concentration", "Normal", "Lethal effects", "Non-lethal effects", "%Mortality (only lethal)", "% Affected (non-lethal + lethal)"};
     private Window window;
     DRTable[] answers, student;
@@ -115,7 +115,7 @@ public class DoseResponse {
         Double[] answers = new Double[5];
         this.window.makeQuestionsPane();
         for (int i = 0; i < 5; i++) {
-            this.window.showOpenQuestion("Calculate " + calc.names[i], i);
+            this.window.showOpenQuestion("Calculate " + calc.names[i], i, true);
             instructions += (calc.descriptions[i] + "\n" + "(Only type numbers)\n");
         }
         this.window.makeBackgroundPane();

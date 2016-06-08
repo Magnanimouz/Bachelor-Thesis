@@ -56,7 +56,7 @@ public class Main {
             }
             String ret = "";
             Object toReturn = JOptionPane.showInputDialog(choice, "Choose " + option + ":\n", option, -1, (Icon) null, possibilities, possibilities[0]);
-            if (toReturn.equals(null)) {
+            if (toReturn == null) {
                 System.err.println("Incorrect input, or cancelled.");
                 System.exit(1);
             }

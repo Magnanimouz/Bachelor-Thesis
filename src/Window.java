@@ -1,8 +1,10 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -100,7 +102,7 @@ public class Window extends JFrame {
         JPanel intro = new JPanel(formation);
         intro.setBackground(Color.WHITE);
         intro.setPreferredSize(new Dimension(600, 600));
-        console = setShowText("Information", 800, 400);
+        console = setShowText("Information", false, 800, 400);
         intro.add(console);
         System.out.println(information);
         constraints.gridy = 1;
@@ -203,17 +205,14 @@ public class Window extends JFrame {
     }
 
     public void showOpenQuestion(String input, int pos){
-        JPanel question = new JPanel(formation);
+        JPanel question = new JPanel(new BorderLayout());
         constraints.gridx = pos;
-        JTextArea answer = new JTextArea("Type here");
+        JTextArea answer = new JTextArea("Type here", 1, 10);
         answer.setBorder(BorderFactory.createLineBorder(Color.black));
         input = input + ":";
         JLabel name = new JLabel(input);
-        constraints.gridy = 0;
-        question.add(name, constraints);
-        constraints.gridy = 1;
-        question.add(answer, constraints);
-        constraints.gridy = 2;
+        question.add(name, BorderLayout.NORTH);
+        question.add(answer, BorderLayout.CENTER);
         button = new JButton("Store");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -226,6 +225,11 @@ public class Window extends JFrame {
                     Scanner scan = new Scanner(file);
                     String answer = scan.nextLine();
                     scan.close();
+                    if (!isDouble(answer)) {
+                        System.err.printf("Invalid input: \"%s\". Type a number and press store again.\n", answer);
+                        return;
+                    }
+                    else System.err.printf("Input stored. Do not answer this question again.\n");
                     openanswers.add(answer);
                     file.delete();
                 } catch (IOException e) {
@@ -233,15 +237,24 @@ public class Window extends JFrame {
                 }
             }
         });
-        question.add(button, constraints);
+        question.add(button, BorderLayout.SOUTH);
         constraints.gridy = 0;
         questions.add(question, constraints);
         center.add(questions, BorderLayout.SOUTH);
         addToMain(0, center);
     }
 
+    boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public void showBackground(String text){
-        console = setShowText("Background", 350, 800);
+        console = setShowText("Background", false, 350, 800);
         background.add(console);
         System.out.println(text);
         button = submit();
@@ -261,7 +274,7 @@ public class Window extends JFrame {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Feedback.txt"));
             String feedback = scan.useDelimiter("\\A").next();
             scan.close();
-            JTextArea info = setShowText("Feedback", 400, 200);
+            JTextArea info = setShowText("Feedback", false, 650, 200);
             System.out.println(feedback);
             background.add(info, constraints);
         } catch (FileNotFoundException e) {e.printStackTrace();}
@@ -269,7 +282,7 @@ public class Window extends JFrame {
         constraints.gridy = 1;
         for (int i = 0; i < users.length; i++) {
             JPanel answer = new JPanel(formation);
-            JLabel name = new JLabel(users[i]);
+            JLabel name = new JLabel(users[i]  + " in mM");
             for (int j = 0; j < names.length; j++) {
                 JLabel section = new JLabel(names[j]);
                 JLabel input = new JLabel(data[i][j].toString());
@@ -287,9 +300,15 @@ public class Window extends JFrame {
 
         }
         button = close();
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         background.add(button, constraints);
         addToMain(2, background);
+    }
+
+    public void showGrade(int counter, int numberOfMistakes) {
+        JTextArea grade = setShowText("Mistakes", true, 180, 100);
+        System.out.printf("Number of mistakes made: %d out of %d.\n", counter, numberOfMistakes);
+        background.add(grade);
     }
 
     public void showWindow() {
@@ -303,6 +322,7 @@ public class Window extends JFrame {
         setTableSize(table, widths);
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
         table.setFillsViewportHeight(true);
+        table.setEnabled(false);
         JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tableHolder.setPreferredSize(new Dimension(700, 135));
         tableHolder.setMinimumSize(new Dimension(700, 150));
@@ -320,6 +340,7 @@ public class Window extends JFrame {
             JTable table = new JTable(data[i], columns);
             int[] widths = {80, 50, 100, 120, 150, 180};
             setTableSize(table, widths);
+            table.setEnabled(false);
             JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             panel.add(tableHolder, BorderLayout.CENTER);
             panel.add(new JLabel(names[i]), BorderLayout.NORTH);
@@ -338,11 +359,16 @@ public class Window extends JFrame {
         }
     }
 
-    JTextArea setShowText(String type, int xSize, int ySize){
+    JTextArea setShowText(String type, boolean bold, int xSize, int ySize){
         console = new JTextArea(" - " + type + " - \n");
+        String font = console.getFont().getFontName();
         console.setSize(xSize, ySize);
         console.setLineWrap(true);
         console.setEditable(false);
+        if (bold) {
+            console.setFont(new Font(font,  Font.BOLD, 12));
+            console.setBorder(BorderFactory.createLineBorder(Color.black));
+        }
         PrintStream consoleOut = new PrintStream(new CustomOutputStream(console));
         System.setOut(consoleOut);
         return console;

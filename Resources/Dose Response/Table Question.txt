@@ -1,2 +1,2 @@
 Given this picture, note down which effects are applicable.
-given the state of the embroy, heartrate, and movement; choose whether this embryo is Alive, Affected, or Dead.
+given the state of the embryo, heartrate, and movement; choose whether this embryo is Alive, Affected, or Dead.

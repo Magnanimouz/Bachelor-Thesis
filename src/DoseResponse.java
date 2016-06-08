@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class DoseResponse {
 
-    private final int NUMBER_OF_SAMPLES = 84, SAMPLES_PER_SET = 12, NUMBER_OF_SETS = 7;
+    private final int NUMBER_OF_SAMPLES = 84, SAMPLES_PER_SET = 12, NUMBER_OF_SETS = 7, POSSIBLE_NUMBER_OF_MISTAKES = 17;
     private final String[] columnNames = {"Concentration", "Normal", "Lethal effects", "Non-lethal effects", "%Mortality (only lethal)", "% Affected (non-lethal + lethal)"};
     private Window window;
     DRTable[] answers, student;
@@ -146,6 +146,8 @@ public class DoseResponse {
         openData[1] = studentCalc.calculations;
         this.window.showAnswers(names, answerCalc.names, openData);
 
+        getGrade(answerTable, studentTable, answerCalc, studentCalc);
+
         this.window.showWindow();
 
         try {
@@ -153,6 +155,19 @@ public class DoseResponse {
                 Thread.sleep(200);
             }
         } catch (InterruptedException ignored) {}
+    }
+
+    void getGrade(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc) {
+        int mistakeCounter = 0;
+        for (int i = 0; i < answerTable.length-2; i++){
+            for (int j = 0; j < answerTable[i].length-2; j++) {
+                if (!studentTable[i+2][j].equals(answerTable[i+2][j])) mistakeCounter++;
+            }
+        }
+        for (int i = 0; i < answerCalc.calculations.length; i++) {
+            if (!studentCalc.calculations[i].equals(answerCalc.calculations[i])) mistakeCounter++;
+        }
+        this.window.showGrade(mistakeCounter, POSSIBLE_NUMBER_OF_MISTAKES);
     }
 
     Object[][] calculateTable(DRTable[] table) {
@@ -168,7 +183,9 @@ public class DoseResponse {
             dead[i] = count(i, DRTable.Result.DEAD, table);
             affected[i] = count(i, DRTable.Result.AFFECTED, table);
             mortality[i] = ((dead[i] / SAMPLES_PER_SET) * 100);
+            mortality[i] = Math.round(mortality[i] * 100d) / 100d;
             percentAffected[i] = (((dead[i] + affected[i]) / SAMPLES_PER_SET) * 100);
+            percentAffected[i] = Math.round(percentAffected[i] * 100d) / 100d;
             for (int j = 0; j < 6; j++) {
                 if (j == 0) data[i][j] = concentrations[i];
                 else if (j == 1) data[i][j] = alive[i];

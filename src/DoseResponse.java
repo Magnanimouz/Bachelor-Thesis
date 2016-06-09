@@ -144,7 +144,7 @@ public class DoseResponse {
         Object[][] openData = new Object[2][];
         openData[0] = answerCalc.calculations;
         openData[1] = studentCalc.calculations;
-        this.window.showAnswers(names, answerCalc.names, openData);
+        this.window.showDRAnswers(names, answerCalc.names, openData);
 
         getGrade(answerTable, studentTable, answerCalc, studentCalc);
 

@@ -1,19 +1,10 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 
@@ -231,7 +222,6 @@ public class Window extends JFrame {
                     scan.close();
                     if (number) {
                         if (!isDouble(answer)) {
-                            System.err.printf("Invalid input: \"%s\". Retry and press store again.\n", answer);
                             JOptionPane.showMessageDialog(null, "Not a number, re-type and press store again once", "Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
@@ -272,7 +262,7 @@ public class Window extends JFrame {
         addToMain(2, background);
     }
 
-    public void showAnswers(String[] users, String[] names, Object[][] data){
+    public void showDRAnswers(String[] users, String[] names, Object[][] data){
         JPanel answers = new JPanel(formation);
         GridBagConstraints cons = new GridBagConstraints();
         cons.insets = new Insets(0, 5, 0, 5);

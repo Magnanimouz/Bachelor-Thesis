@@ -129,3 +129,65 @@ Jun 08, 2016 11:39:46 PM
 STDERR: 	at java.lang.reflect.Method.invoke(Method.java:498)
 Jun 08, 2016 11:39:46 PM  
 STDERR: 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+Jun 09, 2016 10:42:44 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 09, 2016 10:43:03 AM  
+STDERR: Exception in thread "main" 
+Jun 09, 2016 10:43:03 AM  
+STDERR: java.lang.NullPointerException
+Jun 09, 2016 10:43:03 AM  
+STDERR: 	at Main.authenticator(Main.java:55)
+Jun 09, 2016 10:43:03 AM  
+STDERR: 	at Main.main(Main.java:15)
+Jun 09, 2016 10:43:03 AM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Jun 09, 2016 10:43:03 AM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+Jun 09, 2016 10:43:03 AM  
+STDERR: 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+Jun 09, 2016 10:43:03 AM  
+STDERR: 	at java.lang.reflect.Method.invoke(Method.java:498)
+Jun 09, 2016 10:43:03 AM  
+STDERR: 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+Jun 09, 2016 10:46:07 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 09, 2016 11:40:42 AM  
+STDERR: Exception in thread "main" 
+Jun 09, 2016 11:40:42 AM  
+STDERR: java.lang.NullPointerException
+Jun 09, 2016 11:40:42 AM  
+STDERR: 	at Main.choice(Main.java:126)
+Jun 09, 2016 11:40:42 AM  
+STDERR: 	at Main.main(Main.java:46)
+Jun 09, 2016 11:40:42 AM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Jun 09, 2016 11:40:42 AM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+Jun 09, 2016 11:40:42 AM  
+STDERR: 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+Jun 09, 2016 11:40:42 AM  
+STDERR: 	at java.lang.reflect.Method.invoke(Method.java:498)
+Jun 09, 2016 11:40:42 AM  
+STDERR: 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+Jun 09, 2016 1:25:04 PM  
+STDERR: Exception in thread "main" 
+Jun 09, 2016 1:25:04 PM  
+STDERR: java.lang.NullPointerException
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at java.io.StringReader.<init>(StringReader.java:50)
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at java.util.Scanner.<init>(Scanner.java:702)
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at Main.main(Main.java:65)
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at java.lang.reflect.Method.invoke(Method.java:498)
+Jun 09, 2016 1:25:04 PM  
+STDERR: 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+Jun 09, 2016 8:26:54 PM  
+STDERR: Incorrect input, or cancelled.

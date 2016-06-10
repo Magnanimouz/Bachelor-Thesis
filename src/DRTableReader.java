@@ -5,13 +5,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class DRTableReader extends DoseResponse {
+class DRTableReader extends DoseResponse {
 
-    DRTable[] table;
+    private DRTable[] table;
 
     DRTableReader(DRTable[] table){
         this.table = table;
@@ -46,11 +45,10 @@ public class DRTableReader extends DoseResponse {
                     counter++;
                 }
             }
-        } catch (FileNotFoundException e) {e.printStackTrace();}
-          catch (IOException e) {e.printStackTrace();}
+        } catch (IOException e) {e.printStackTrace();}
     }
 
-    void fillRow(Iterator cellIterator, int counter){
+    private void fillRow(Iterator cellIterator, int counter){
         table[counter].setSet(((Cell) cellIterator.next()).getStringCellValue());
 
         String check = ((Cell) cellIterator.next()).getStringCellValue();
@@ -60,15 +58,30 @@ public class DRTableReader extends DoseResponse {
         table[counter].setPicture(((Cell) cellIterator.next()).getStringCellValue());
 
         check = ((Cell) cellIterator.next()).getStringCellValue();
-        if (check.equals("Normal")) {table[counter].setHeartrate(DRTable.Heartrate.NORMAL);}
-        else if (check.equals("No")) {table[counter].setHeartrate(DRTable.Heartrate.NONE);}
-        else if (check.equals("Lower")) {table[counter].setHeartrate(DRTable.Heartrate.AFFECTED);}
+        switch (check) {
+            case "Normal":
+                table[counter].setHeartrate(DRTable.Heartrate.NORMAL);
+                break;
+            case "No":
+                table[counter].setHeartrate(DRTable.Heartrate.NONE);
+                break;
+            case "Lower":
+                table[counter].setHeartrate(DRTable.Heartrate.AFFECTED);
+                break;
+        }
 
         check = ((Cell) cellIterator.next()).getStringCellValue();
-        if (check.equals("Normal")) {table[counter].setMovement(DRTable.Movement.NORMAL);}
-        else if (check.equals("No")) {table[counter].setMovement(DRTable.Movement.NONE);}
-        else if (check.equals("Lower")) {table[counter].setMovement(DRTable.Movement.AFFECTED);}
-
+        switch (check) {
+            case "Normal":
+                table[counter].setMovement(DRTable.Movement.NORMAL);
+                break;
+            case "No":
+                table[counter].setMovement(DRTable.Movement.NONE);
+                break;
+            case "Lower":
+                table[counter].setMovement(DRTable.Movement.AFFECTED);
+                break;
+        }
         int effect = 0;
         while (effect < 7) {
             double value = ((Cell) cellIterator.next()).getNumericCellValue();
@@ -78,8 +91,16 @@ public class DRTableReader extends DoseResponse {
         }
 
         check = ((Cell) cellIterator.next()).getStringCellValue();
-        if (check.equals("Ok")) {table[counter].setResult(DRTable.Result.ALIVE);}
-        else if (check.equals("Lethal")) {table[counter].setResult(DRTable.Result.DEAD);}
-        else if (check.equals("Non-lethal")) {table[counter].setResult(DRTable.Result.AFFECTED);}
+        switch (check) {
+            case "Ok":
+                table[counter].setResult(DRTable.Result.ALIVE);
+                break;
+            case "Lethal":
+                table[counter].setResult(DRTable.Result.DEAD);
+                break;
+            case "Non-lethal":
+                table[counter].setResult(DRTable.Result.AFFECTED);
+                break;
+        }
     }
 }

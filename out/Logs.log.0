@@ -191,3 +191,77 @@ Jun 09, 2016 1:25:04 PM
 STDERR: 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
 Jun 09, 2016 8:26:54 PM  
 STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:28:58 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:31:25 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:32:04 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:35:03 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:35:35 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:36:00 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:42:44 AM  
+STDERR: Incorrect input, or cancelled.
+Jun 10, 2016 11:51:02 AM  
+STDERR: Exception in thread "main" 
+Jun 10, 2016 11:51:02 AM  
+STDERR: java.util.NoSuchElementException: No line found
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at java.util.Scanner.nextLine(Scanner.java:1540)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at Main.checkDuplicate(Main.java:214)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at Main.showOptions(Main.java:85)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at Main.main(Main.java:15)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at java.lang.reflect.Method.invoke(Method.java:498)
+Jun 10, 2016 11:51:02 AM  
+STDERR: 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+Jun 10, 2016 11:52:14 AM  
+STDERR: Exception in thread "main" 
+Jun 10, 2016 11:52:14 AM  
+STDERR: java.util.NoSuchElementException: No line found
+Jun 10, 2016 11:52:14 AM  
+STDERR: 	at java.util.Scanner.nextLine(Scanner.java:1540)
+Jun 10, 2016 11:52:14 AM  
+STDERR: 	at Main.checkDuplicate(Main.java:214)
+Jun 10, 2016 11:52:14 AM  
+STDERR: 	at Main.showOptions(Main.java:85)
+Jun 10, 2016 11:52:14 AM  
+STDERR: 	at Main.main(Main.java:15)
+Jun 10, 2016 11:54:01 AM  
+STDERR: Exception in thread "main" 
+Jun 10, 2016 11:54:02 AM  
+STDERR: java.util.NoSuchElementException: No line found
+Jun 10, 2016 11:54:05 AM  
+STDERR: 	at java.util.Scanner.nextLine(Scanner.java:1540)
+Jun 10, 2016 11:54:07 AM  
+STDERR: 	at Main.checkDuplicate(Main.java:214)
+Jun 10, 2016 11:54:09 AM  
+STDERR: 	at Main.showOptions(Main.java:85)
+Jun 10, 2016 11:54:11 AM  
+STDERR: 	at Main.main(Main.java:15)
+Jun 10, 2016 12:01:56 PM  
+STDERR: Exception in thread "main" 
+Jun 10, 2016 12:02:02 PM  
+STDERR: java.util.NoSuchElementException: No line found
+Jun 10, 2016 12:02:02 PM  
+STDERR: 	at java.util.Scanner.nextLine(Scanner.java:1540)
+Jun 10, 2016 12:02:02 PM  
+STDERR: 	at Main.checkDuplicate(Main.java:214)
+Jun 10, 2016 12:02:02 PM  
+STDERR: 	at Main.showOptions(Main.java:85)
+Jun 10, 2016 12:02:02 PM  
+STDERR: 	at Main.main(Main.java:15)
+Jun 10, 2016 12:25:55 PM  
+STDERR: Incorrect input, or cancelled.

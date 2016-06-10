@@ -3,8 +3,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
-
-public class DoseResponse {
+class DoseResponse {
 
     private final int NUMBER_OF_SAMPLES = 84, SAMPLES_PER_SET = 12, NUMBER_OF_SETS = 7, POSSIBLE_NUMBER_OF_MISTAKES = 20;
     private final String[] columnNames = {"Concentration", "Normal", "Lethal effects", "Non-lethal effects", "%Mortality (only lethal)", "% Affected (non-lethal + lethal)"};
@@ -35,7 +34,7 @@ public class DoseResponse {
             DRTable.Movement move = answers[i].getMove();
             String set = answers[i].getSet();
             Double concentration = answers[i].getConcentration();
-            student[i] = makeDRQuestion(i, picture, heart, move, set, concentration);
+            student[i] = makeDRQuestion(picture, heart, move, set, concentration);
         }
 
         this.window.setup();
@@ -58,7 +57,7 @@ public class DoseResponse {
         compareWithAnswers(answerData, studentData, answerCalculations, studentCalculations);
     }
 
-    void makeIntroduction(String introduction) {
+    private void makeIntroduction(String introduction) {
         try {
             this.window.showIntroduction(introduction);
             this.window.showWindow();
@@ -68,7 +67,7 @@ public class DoseResponse {
         } catch (InterruptedException ignored) {}
     }
 
-    DRTable makeDRQuestion(int i, String picture, DRTable.Heartrate heart, DRTable.Movement move, String set, Double concentration) {
+    private DRTable makeDRQuestion(String picture, DRTable.Heartrate heart, DRTable.Movement move, String set, Double concentration) {
         DRTable submission = new DRTable();
 
         this.window.setup();
@@ -110,7 +109,7 @@ public class DoseResponse {
         return submission;
     }
 
-    Double[] makeDRCalculationQuestion(Calculation calc) {
+    private Double[] makeDRCalculationQuestion(Calculation calc) {
         String instructions = "";
         Double[] answers = new Double[5];
         this.window.makeQuestionsPane();
@@ -135,7 +134,7 @@ public class DoseResponse {
         return answers;
     }
 
-    void compareWithAnswers(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc){
+    private void compareWithAnswers(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc){
         Object[][][] data = new Object[2][][];
         data[0] = answerTable;
         data[1] = studentTable;
@@ -157,7 +156,7 @@ public class DoseResponse {
         } catch (InterruptedException ignored) {}
     }
 
-    void getGrade(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc) {
+    private void getGrade(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc) {
         int mistakeCounter = 0;
         for (int i = 0; i < answerTable.length-2; i++){
             for (int j = 0; j < answerTable[i].length-2; j++) {
@@ -170,7 +169,7 @@ public class DoseResponse {
         this.window.showGrade(mistakeCounter, POSSIBLE_NUMBER_OF_MISTAKES);
     }
 
-    Object[][] calculateTable(DRTable[] table) {
+    private Object[][] calculateTable(DRTable[] table) {
         double[] alive = new double[NUMBER_OF_SETS];
         double[] dead = new double[NUMBER_OF_SETS];
         double[] affected = new double[NUMBER_OF_SETS];
@@ -198,7 +197,7 @@ public class DoseResponse {
         return data;
     }
 
-    int count(int set, DRTable.Result sample, DRTable[] table) {
+    private int count(int set, DRTable.Result sample, DRTable[] table) {
         int count = 0;
         for (int i = (set * SAMPLES_PER_SET); i < (SAMPLES_PER_SET * (set + 1)); i++) {
             if (table[i].getResult() == sample) count++;
@@ -206,7 +205,7 @@ public class DoseResponse {
         return count;
     }
 
-    void showGraph(String[] columns, Object[][] table){
+    private void showGraph(String[] columns, Object[][] table){
         try {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Graph Question.txt"));
             String text = scan.useDelimiter("\\A").next();
@@ -224,7 +223,7 @@ public class DoseResponse {
         } catch (InterruptedException ignored) {}
     }
 
-    DRTable[] makeTable() {
+    private DRTable[] makeTable() {
         DRTable[] toFill = new DRTable[NUMBER_OF_SAMPLES];
         for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
             toFill[i] = new DRTable();
@@ -242,9 +241,9 @@ class DRTable {
     private String set, picture;
     private Double concentration;
 
-    static enum Heartrate {NORMAL, AFFECTED, NONE}
-    static enum Movement {NORMAL, AFFECTED, NONE}
-    static enum Result {ALIVE, AFFECTED, DEAD}
+    enum Heartrate {NORMAL, AFFECTED, NONE}
+    enum Movement {NORMAL, AFFECTED, NONE}
+    enum Result {ALIVE, AFFECTED, DEAD}
 
     private Effect[] effect = new Effect[NUMBER_OF_EFFECTS];
 
@@ -285,7 +284,7 @@ class DRTable {
                 '}';
     }
 
-    void nameEffects(){
+    private void nameEffects(){
         effect[0].setName("Coagulated");
         effect[1].setName("Edema");
         effect[2].setName("Tail malformation");

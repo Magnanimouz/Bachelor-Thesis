@@ -315,9 +315,9 @@ public class Window extends JFrame {
         this.window.pack();
     }
 
-    void presentTable(String[] columns, Object[][] data) {
+    void presentTable(String[] columns, Object[][] data, int[] widths) {
         JTable table = new JTable(data, columns);
-        int[] widths = {80, 50, 100, 120, 150, 180};
+
         setTableSize(table, widths);
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
         table.setFillsViewportHeight(true);
@@ -329,7 +329,7 @@ public class Window extends JFrame {
         addToMain(0, center);
     }
 
-    void presentTables(String[] columns, Object[][][] data, String[] names){
+    void presentTables(String[] columns, Object[][][] data, String[] names, int[] widths){
         JPanel tables = new JPanel(formation);
         tables.setBackground(Color.WHITE);
         constraints.gridy = 0;
@@ -337,7 +337,6 @@ public class Window extends JFrame {
             JPanel panel = new JPanel(new BorderLayout());
             panel.setMinimumSize(new Dimension(700, 150));
             JTable table = new JTable(data[i], columns);
-            int[] widths = {80, 50, 100, 120, 150, 180};
             setTableSize(table, widths);
             table.setEnabled(false);
             JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

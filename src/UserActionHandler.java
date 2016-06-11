@@ -126,7 +126,6 @@ class UserActionHandler {
         File input = new File("./Resources/Courses.txt");
         try {
             Scanner in = new Scanner(input);
-
             switch (option) {
                 case "course":
                     int i = 0;

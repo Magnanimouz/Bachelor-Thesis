@@ -46,7 +46,8 @@ class DoseResponse {
 
         this.window.setup();
 
-        this.window.presentTable(columnNames, studentData);
+        int[] widths = {80, 50, 100, 120, 150, 180};
+        this.window.presentTable(columnNames, studentData, widths);
         Calculation answerCalculations = new Calculation();
         answerCalculations.fillAnswers();
         Calculation studentCalculations = new Calculation();
@@ -139,7 +140,8 @@ class DoseResponse {
         data[0] = answerTable;
         data[1] = studentTable;
         String[] names = {"Answers", "Student"};
-        this.window.presentTables(columnNames, data, names);
+        int[] widths = {80, 50, 100, 120, 150, 180};
+        this.window.presentTables(columnNames, data, names, widths);
         Object[][] openData = new Object[2][];
         openData[0] = answerCalc.calculations;
         openData[1] = studentCalc.calculations;
@@ -211,8 +213,9 @@ class DoseResponse {
             String text = scan.useDelimiter("\\A").next();
             scan.close();
             String path = "./Resources/Dose Response/Dose Response Graph.png";
+            int[] widths = {80, 50, 100, 120, 150, 180};
             this.window.showPicture(path);
-            this.window.presentTable(columns, table);
+            this.window.presentTable(columns, table, widths);
             this.window.showIntroduction(text);
             this.window.showWindow();
         } catch (FileNotFoundException e) {e.printStackTrace();}

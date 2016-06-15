@@ -147,8 +147,87 @@ class DoseResponse {
         openData[1] = studentCalc.calculations;
         this.window.showDRAnswers(names, answerCalc.names, openData);
 
-        getGrade(answerTable, studentTable, answerCalc, studentCalc);
+        boolean feedback = getGrade(answerTable, studentTable, answerCalc, studentCalc);
 
+        if (feedback) showInDepthFeedback();
+
+        try {
+            while (!this.window.proceed) {
+                Thread.sleep(200);
+            }
+        } catch (InterruptedException ignored) {}
+
+    }
+
+    void showInDepthFeedback() {
+        int differences = 0;
+        for (int i = 0; i < answers.length; i++) {
+            if (!answers[i].getResult().equals(student[i].getResult())) differences++;
+        }
+
+        DRTable[] ans = new DRTable[differences];
+        DRTable[] stu = new DRTable[differences];
+        for (int i = 0; i < ans.length; i++) {
+            ans[i] = new DRTable();
+            stu[i] = new DRTable();
+        }
+        int pos = 0;
+        for (int i = 0; i < answers.length; i++) {
+            if (!answers[i].getResult().equals(student[i].getResult())) {
+                ans[pos] = answers[i];
+                stu[pos] = student[i];
+                pos++;
+            }
+        }
+
+        Object[][] res = new Object[differences][3];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = compareDRRows(ans[i], stu[i]);
+        }
+
+        String[] names = {"Image", "Effects", "Result"};
+        int[] widths = {100, 1050, 60};
+        this.window.presentTable(names, res, widths);
+        this.window.addButton();
+        this.window.showWindow();
+    }
+
+    Object[] compareDRRows(DRTable answers, DRTable student) {
+        Object[] ret = new Object[3];
+        if (!answers.getResult().equals(student.getResult())) {
+            ret[0] = student.getPicture();
+            DRTable.Effect[] eff = student.getEffects();
+            String effect = "";
+            for (int i = 0; i < eff.length; i++) {
+                if (i == eff.length) effect += (eff[i].getName() + ": " + eff[i].getStatus());
+                else effect += (eff[i].getName() + ": " + eff[i].getStatus() + " ");
+            }
+
+            ret[1] = effect;
+            ret[2] = student.getResult();
+        }
+        return ret;
+    }
+
+    private boolean getGrade(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc) {
+        boolean feedback = false;
+        int mistakeCounter = 0;
+        for (int i = 0; i < answerTable.length - 2; i++) {
+            for (int j = 0; j < answerTable[i].length - 2; j++) {
+                if (!studentTable[i + 2][j].equals(answerTable[i + 2][j])) mistakeCounter++;
+            }
+        }
+        for (int i = 0; i < answerCalc.calculations.length; i++) {
+            if (i > 2) {
+                double margin = 1;
+                if (i == 3) margin = 0.1;
+                Double stud = studentCalc.calculations[i];
+                Double ans = answerCalc.calculations[i];
+                if (stud < ans - margin) mistakeCounter++;
+                else if (stud > ans + margin) mistakeCounter++;
+            } else if (!studentCalc.calculations[i].equals(answerCalc.calculations[i])) mistakeCounter++;
+        }
+        this.window.showGrade(mistakeCounter, POSSIBLE_NUMBER_OF_MISTAKES);
         this.window.showWindow();
 
         try {
@@ -156,19 +235,9 @@ class DoseResponse {
                 Thread.sleep(200);
             }
         } catch (InterruptedException ignored) {}
-    }
 
-    private void getGrade(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc) {
-        int mistakeCounter = 0;
-        for (int i = 0; i < answerTable.length-2; i++){
-            for (int j = 0; j < answerTable[i].length-2; j++) {
-                if (!studentTable[i+2][j].equals(answerTable[i+2][j])) mistakeCounter++;
-            }
-        }
-        for (int i = 0; i < answerCalc.calculations.length; i++) {
-            if (!studentCalc.calculations[i].equals(answerCalc.calculations[i])) mistakeCounter++;
-        }
-        this.window.showGrade(mistakeCounter, POSSIBLE_NUMBER_OF_MISTAKES);
+        if (this.window.feedback) feedback = true;
+        return feedback;
     }
 
     private Object[][] calculateTable(DRTable[] table) {
@@ -310,6 +379,8 @@ class DRTable {
         return this.concentration;
     }
 
+    Effect[] getEffects() { return this.effect;}
+
     Effect getEffect(int number) {
         return this.effect[number];
     }
@@ -400,16 +471,16 @@ class Calculation {
         for (int i = 0; i < NUMBER_OF_CALCULATIONS; i++) {
             if (i == 0) {
                 names[i] = "NOEC";
-                descriptions[i] = "NOEC: \nHighest concentration with no effects compared to control group";
+                descriptions[i] = "NOEC: \nHighest concentration with no effects compared to\ncontrol group";
             } else if (i == 1) {
                 names[i] = "LOEC";
-                descriptions[i] = "LOEC: \nLowest concentration with effects compared to control group";
+                descriptions[i] = "LOEC: \nLowest concentration with effects compared to\ncontrol group";
             } else if (i == 2) {
                 names[i] = "LC50";
-                descriptions[i] = "LC50: \nConcentration where 50% of the treated embryos are dead";
+                descriptions[i] = "LC50: \nConcentration where 50% of the treated embryos\nare dead";
             } else if (i == 3) {
                 names[i] = "EC50";
-                descriptions[i] = "EC50: \nConcentration where 50% of the treated embryos are affected (malformed and dead)";
+                descriptions[i] = "EC50: \nConcentration where 50% of the treated embryos\nare affected (malformed and dead)";
             } else if (i == 4) {
                 names[i] = "TI";
                 descriptions[i] = "TI: \nTeratogenic Index = LC50/EC50";

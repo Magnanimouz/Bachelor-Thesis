@@ -15,6 +15,7 @@ public class Window extends JFrame {
     private JTextArea console;
     private GridBagConstraints constraints;
     private GridBagLayout formation;
+    public boolean feedback = false;
 
     private HashMap<String, JCheckBox[]> checkboxes;
     private HashMap<String, ButtonGroup> radiobuttons;
@@ -108,6 +109,13 @@ public class Window extends JFrame {
         constraints.gridx = 0;
         for (int i = 0; i < pos; i ++) constraints.gridx++;
         main.add(toAdd, constraints);
+    }
+
+    void addButton() {
+        button = close();
+        JPanel toAdd = new JPanel();
+        toAdd.add(button);
+        addToMain(4, toAdd);
     }
 
     void makeConditionPane(){
@@ -273,7 +281,8 @@ public class Window extends JFrame {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Feedback.txt"));
             String feedback = scan.useDelimiter("\\A").next();
             scan.close();
-            JTextArea info = setShowText("Feedback", false, 650, 200);
+            JTextArea info = setShowText("Feedback", false, 350, 200);
+            info.setPreferredSize(new Dimension(300, 200));
             System.out.println(feedback);
             background.add(info, constraints);
         } catch (FileNotFoundException e) {e.printStackTrace();}
@@ -307,10 +316,25 @@ public class Window extends JFrame {
     void showGrade(int counter, int numberOfMistakes) {
         JTextArea grade = setShowText("Mistakes", true, 180, 100);
         System.out.printf("Number of mistakes made: %d out of %d.\n", counter, numberOfMistakes);
+        JButton but = new JButton("Show In Depth Feedback");
+        but.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                window.setVisible(false);
+                setup();
+                feedback = true;
+                proceed = true;
+            }
+        });
+
         background.add(grade);
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        background.add(but, constraints);
     }
 
     void showWindow() {
+        proceed = false;
         this.window.setVisible(true);
         this.window.pack();
     }
@@ -322,9 +346,9 @@ public class Window extends JFrame {
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
         table.setFillsViewportHeight(true);
         table.setEnabled(false);
-        JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        tableHolder.setPreferredSize(new Dimension(700, 135));
-        tableHolder.setMinimumSize(new Dimension(700, 150));
+        JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        tableHolder.setPreferredSize(new Dimension(1050, 185));
+        tableHolder.setMinimumSize(new Dimension(1050, 200));
         center.add(tableHolder, BorderLayout.NORTH);
         addToMain(0, center);
     }

@@ -2,10 +2,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.swing.JTextArea;
 
-public class CustomOutputStream extends OutputStream {
+class CustomOutputStream extends OutputStream {
     private JTextArea textArea;
 
-    public CustomOutputStream(JTextArea textArea) {
+    CustomOutputStream(JTextArea textArea) {
         this.textArea = textArea;
     }
 

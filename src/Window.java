@@ -15,7 +15,6 @@ public class Window extends JFrame {
     private JTextArea console;
     private GridBagConstraints constraints;
     private GridBagLayout formation;
-    public boolean feedback = false;
 
     private HashMap<String, JCheckBox[]> checkboxes;
     private HashMap<String, ButtonGroup> radiobuttons;
@@ -111,20 +110,13 @@ public class Window extends JFrame {
         main.add(toAdd, constraints);
     }
 
-    void addButton() {
-        button = close();
-        JPanel toAdd = new JPanel();
-        toAdd.add(button);
-        addToMain(4, toAdd);
-    }
-
-    void makeConditionPane(){
+    private void makeConditionPane(){
         choices = new JPanel(formation);
         choices.setBackground(Color.WHITE);
         choices.setPreferredSize(new Dimension(350, 800));
     }
 
-    void makeCenterPane(){
+    private void makeCenterPane(){
         center = new JPanel(new BorderLayout());
         center.setBackground(Color.WHITE);
         center.setPreferredSize(new Dimension(900, 800));
@@ -272,7 +264,7 @@ public class Window extends JFrame {
         addToMain(2, background);
     }
 
-    void showDRAnswers(String[] users, String[] names, Object[][] data){
+    void showDRAnswers(String user, String[] names, Double[] data, int mistakes, int numberOfMistakes){
         JPanel answers = new JPanel(formation);
         GridBagConstraints cons = new GridBagConstraints();
         cons.insets = new Insets(0, 5, 0, 5);
@@ -281,24 +273,23 @@ public class Window extends JFrame {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Feedback.txt"));
             String feedback = scan.useDelimiter("\\A").next();
             scan.close();
-            JTextArea info = setShowText("Feedback", false, 350, 200);
-            info.setPreferredSize(new Dimension(300, 200));
+            JTextArea info = setShowText("Feedback", false, 350, 300);
+            info.setPreferredSize(new Dimension(350, 250));
             System.out.println(feedback);
             background.add(info, constraints);
         } catch (FileNotFoundException e) {e.printStackTrace();}
 
         constraints.gridy = 1;
-        for (int i = 0; i < users.length; i++) {
-            JPanel answer = new JPanel(formation);
-            JLabel name = new JLabel(users[i]  + " in mM");
-            for (int j = 0; j < names.length; j++) {
-                JLabel section = new JLabel(names[j]);
-                JLabel input = new JLabel(data[i][j].toString());
-                cons.gridy = 0;
-                answer.add(section, cons);
-                cons.gridy = 1;
-                answer.add(input, cons);
-            }
+        JPanel answer = new JPanel(formation);
+        JLabel name = new JLabel(user  + " in mM");
+        for (int j = 0; j < names.length; j++) {
+            JLabel section = new JLabel(names[j]);
+            JLabel input = new JLabel(data[j].toString());
+            cons.gridy = 0;
+            answer.add(section, cons);
+            cons.gridy = 1;
+            answer.add(input, cons);
+        }
 
             cons.gridy = 0;
             answers.add(name, cons);
@@ -306,31 +297,22 @@ public class Window extends JFrame {
             answers.add(answer, cons);
             background.add(answers, constraints);
 
-        }
+        showGrade(mistakes, numberOfMistakes);
+
         button = close();
         constraints.gridy = 3;
         background.add(button, constraints);
         addToMain(2, background);
+
+        showWindow();
     }
 
-    void showGrade(int counter, int numberOfMistakes) {
+    private void showGrade(int counter, int numberOfMistakes) {
         JTextArea grade = setShowText("Mistakes", true, 180, 100);
-        System.out.printf("Number of mistakes made: %d out of %d.\n", counter, numberOfMistakes);
-        JButton but = new JButton("Show In Depth Feedback");
-        but.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                window.setVisible(false);
-                setup();
-                feedback = true;
-                proceed = true;
-            }
-        });
+        System.out.printf("Number of mistakes made: %d\nout of %d.\n", counter, numberOfMistakes);
 
-        background.add(grade);
-        constraints.gridx = 2;
-        constraints.gridy = 1;
-        background.add(but, constraints);
+        constraints.gridy = 2;
+        background.add(grade, constraints);
     }
 
     void showWindow() {
@@ -353,17 +335,17 @@ public class Window extends JFrame {
         addToMain(0, center);
     }
 
-    void presentTables(String[] columns, Object[][][] data, String[] names, int[] widths){
+    void presentTables(String[][] columns, Object[][][] data, String[] names, int[][] widths){
         JPanel tables = new JPanel(formation);
         tables.setBackground(Color.WHITE);
         constraints.gridy = 0;
         for (int i = 0; i < data.length; i++) {
             JPanel panel = new JPanel(new BorderLayout());
-            panel.setMinimumSize(new Dimension(700, 150));
-            JTable table = new JTable(data[i], columns);
-            setTableSize(table, widths);
+            panel.setMinimumSize(new Dimension(1100, 200));
+            JTable table = new JTable(data[i], columns[i]);
+            setTableSize(table, widths[i]);
             table.setEnabled(false);
-            JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane tableHolder = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
             panel.add(tableHolder, BorderLayout.CENTER);
             panel.add(new JLabel(names[i]), BorderLayout.NORTH);
             tables.add(panel, constraints);

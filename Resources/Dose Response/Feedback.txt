@@ -1,6 +1,12 @@
-Drawing the graph shows a corrolation between the concentration
-and the affected specimen
-Using these one can see that the EC50 and LC50 are near the 5 mM
-and 0.15 mM as used in the picture sets
-Furthermore it is important to note that a logarithmic scale is used
-for the concentration
+Drawing the graph shows a correlation between
+the concentration and the affected specimen
+Using these one can see that the EC50 and
+LC50 are near the 5 mM and 0.15 mM as
+used in the picture sets.
+Furthermore it is important to note that
+a logarithmic scale is used for the
+concentration.
+
+Press close to print the table to a
+file for quick reference in the
+'out' folder.

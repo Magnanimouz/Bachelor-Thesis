@@ -89,7 +89,6 @@ class DoseResponse {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Table Question.txt"));
             String background = scan.useDelimiter("\\A").next();
             scan.close();
-            this.window.makeBackgroundPane();
             this.window.showBackground(background);
 
             this.window.showWindow();
@@ -136,20 +135,33 @@ class DoseResponse {
     }
 
     private void compareWithAnswers(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc){
-        Object[][][] data = new Object[2][][];
-        data[0] = answerTable;
-        data[1] = studentTable;
-        String[] names = {"Answers", "Student"};
-        int[] widths = {80, 50, 100, 120, 150, 180};
-        this.window.presentTables(columnNames, data, names, widths);
-        Object[][] openData = new Object[2][];
-        openData[0] = answerCalc.calculations;
-        openData[1] = studentCalc.calculations;
-        this.window.showDRAnswers(names, answerCalc.names, openData);
+        String[][] columns = new String[3][];
+        columns[0] = columnNames;
+        String[] feedbackColumns = {"Image", "Effects", "Result"};
+        columns[1] = feedbackColumns;
+        String[] effects = new String[8];
+        effects[0] = "Concentration";
+        for (int i = 0; i < 7; i++) {
+            effects[i+1] = student[0].getEffect(i).getName();
+        }
+        columns[2] = effects;
 
-        boolean feedback = getGrade(answerTable, studentTable, answerCalc, studentCalc);
+        Object[][][] data = new Object[3][][];
+        data[0] = studentTable;
+        data[1] = showInDepthFeedback();
+        data[2] = malformationsCounter();
 
-        if (feedback) showInDepthFeedback();
+        String[] names = {"Student", "Feedback", "Malformations"};
+
+        int[] width = {80, 50, 100, 120, 150, 180};
+        int[] feedbackWidth = {100, 1050, 60};
+        int[] malformationsWidth = {80, 80, 50, 150, 150, 150, 150, 150};
+        int[][] widths = {width, feedbackWidth, malformationsWidth};
+
+        this.window.presentTables(columns, data, names, widths);
+
+        int mistakes = getGrade(answerTable, studentTable, answerCalc, studentCalc);
+        this.window.showDRAnswers(names[0], studentCalc.names, studentCalc.calculations, mistakes, POSSIBLE_NUMBER_OF_MISTAKES);
 
         try {
             while (!this.window.proceed) {
@@ -157,9 +169,31 @@ class DoseResponse {
             }
         } catch (InterruptedException ignored) {}
 
+        printFeedback(columns, data, names);
+
     }
 
-    void showInDepthFeedback() {
+    private void printFeedback(String[][] columns, Object[][][] data, String[] names) {
+        BufferedWriter writer;
+        try {
+            writer = new BufferedWriter(new FileWriter("./out/Feedback Reference.txt", false));
+            for (int i = 0; i < names.length; i++) {
+                writer.write(names[i] + "\n");
+                for (int j = 0; j < columns[i].length; j++) {writer.write(columns[i][j] + "\t");}
+                writer.write("\n");
+                for (int j = 0; j < data[i].length; j++) {
+                    for (int k = 0; k < data[i][j].length; k++) {
+                        writer.write(data[i][j][k] + "\t");
+                    }
+                    writer.write("\n");
+                }
+                writer.write("\n");
+            }
+            writer.close();
+        } catch (IOException e) {e.printStackTrace();}
+    }
+
+    private Object[][] showInDepthFeedback() {
         int differences = 0;
         for (int i = 0; i < answers.length; i++) {
             if (!answers[i].getResult().equals(student[i].getResult())) differences++;
@@ -184,22 +218,29 @@ class DoseResponse {
         for (int i = 0; i < res.length; i++) {
             res[i] = compareDRRows(ans[i], stu[i]);
         }
-
-        String[] names = {"Image", "Effects", "Result"};
-        int[] widths = {100, 1050, 60};
-        this.window.presentTable(names, res, widths);
-        this.window.addButton();
-        this.window.showWindow();
+        return res;
     }
 
-    Object[] compareDRRows(DRTable answers, DRTable student) {
+    private Object[][] malformationsCounter() {
+        Object[][] data = new Object[NUMBER_OF_SETS][8];
+        String[] concentrations = {"Negative Control", "Positive Control", "0.06 mM", "0.15 mM", "1.0 mM", "5.0 mM", "11.0 mM"};
+        for (int i = 0; i < NUMBER_OF_SETS; i++) {
+            data[i][0] = concentrations[i];
+            for (int j = 0; j < 7; j++) {
+                data[i][j+1] = countEffects(i, j, student);
+            }
+        }
+        return data;
+    }
+
+    private Object[] compareDRRows(DRTable answers, DRTable student) {
         Object[] ret = new Object[3];
         if (!answers.getResult().equals(student.getResult())) {
             ret[0] = student.getPicture();
             DRTable.Effect[] eff = student.getEffects();
             String effect = "";
             for (int i = 0; i < eff.length; i++) {
-                if (i == eff.length) effect += (eff[i].getName() + ": " + eff[i].getStatus());
+                if (i == eff.length-1) effect += (eff[i].getName() + ": " + eff[i].getStatus());
                 else effect += (eff[i].getName() + ": " + eff[i].getStatus() + " ");
             }
 
@@ -209,8 +250,7 @@ class DoseResponse {
         return ret;
     }
 
-    private boolean getGrade(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc) {
-        boolean feedback = false;
+    private int getGrade(Object[][] answerTable, Object[][] studentTable, Calculation answerCalc, Calculation studentCalc) {
         int mistakeCounter = 0;
         for (int i = 0; i < answerTable.length - 2; i++) {
             for (int j = 0; j < answerTable[i].length - 2; j++) {
@@ -227,17 +267,7 @@ class DoseResponse {
                 else if (stud > ans + margin) mistakeCounter++;
             } else if (!studentCalc.calculations[i].equals(answerCalc.calculations[i])) mistakeCounter++;
         }
-        this.window.showGrade(mistakeCounter, POSSIBLE_NUMBER_OF_MISTAKES);
-        this.window.showWindow();
-
-        try {
-            while (!this.window.proceed) {
-                Thread.sleep(200);
-            }
-        } catch (InterruptedException ignored) {}
-
-        if (this.window.feedback) feedback = true;
-        return feedback;
+        return mistakeCounter;
     }
 
     private Object[][] calculateTable(DRTable[] table) {
@@ -272,6 +302,14 @@ class DoseResponse {
         int count = 0;
         for (int i = (set * SAMPLES_PER_SET); i < (SAMPLES_PER_SET * (set + 1)); i++) {
             if (table[i].getResult() == sample) count++;
+        }
+        return count;
+    }
+
+    private int countEffects(int set, int effect, DRTable[] table) {
+        int count = 0;
+        for (int i = (set * SAMPLES_PER_SET); i < (SAMPLES_PER_SET * (set + 1)); i++) {
+            if (table[i].getEffect(effect).getStatus()) count++;
         }
         return count;
     }

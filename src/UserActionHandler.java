@@ -103,9 +103,7 @@ class UserActionHandler {
                         }
                         FileWriter write = new FileWriter("./Resources/Courses.txt");
                         PrintWriter print = new PrintWriter(write, true);
-                        for (int i = 0; i < text.length; i++) {
-                            print.println(text[i]);
-                        }
+                        for (int i = 0; i < text.length; i++) {print.println(text[i]);}
                         JOptionPane.showMessageDialog(null, "Only a test version. The file holding all courses and assignments has been updated!", "Message", JOptionPane.PLAIN_MESSAGE);
                         break;
                     case "Add data":
@@ -194,9 +192,8 @@ class UserActionHandler {
             if (scan.hasNext()) scan.nextLine();
             pos++;
         }
-        for (int i = 0; i < text.length; i++) {
-            if (input.equals(text[i])) toReturn = true;
-        }
+        for (int i = 0; i < text.length; i++) {if (input.equals(text[i])) toReturn = true;}
+
         return toReturn;
     }
 

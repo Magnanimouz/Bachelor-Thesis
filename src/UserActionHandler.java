@@ -115,6 +115,11 @@ class UserActionHandler {
                 int i = JOptionPane.showConfirmDialog(null, "Make another course, assignment, or add data?", "Confirmation", JOptionPane.YES_NO_OPTION);
                 if (i == JOptionPane.YES_OPTION) showOptions();
         }
+        int i = JOptionPane.showConfirmDialog(null, "Start over, or change between student and teacher?", "Confirmation", JOptionPane.YES_NO_OPTION);
+        if (i == JOptionPane.YES_OPTION) {
+            user = authenticator();
+            showOptions();
+        }
     }
 
     private String choice(String option) throws Exception{

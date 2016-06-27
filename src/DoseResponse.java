@@ -111,7 +111,7 @@ class DoseResponse {
 
     private Double[] makeDRCalculationQuestion(Calculation calc) {
         String instructions = "";
-        Double[] answers = new Double[5];
+        Double[] answers = {0.0, 0.0, 0.0, 0.0, 0.0};
         this.window.makeQuestionsPane();
         for (int i = 0; i < 5; i++) {
             this.window.showOpenQuestion("Calculate " + calc.names[i], i, true);

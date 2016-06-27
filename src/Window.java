@@ -341,7 +341,7 @@ public class Window extends JFrame {
         constraints.gridy = 0;
         for (int i = 0; i < data.length; i++) {
             JPanel panel = new JPanel(new BorderLayout());
-            panel.setMinimumSize(new Dimension(1100, 200));
+            panel.setMinimumSize(new Dimension(1050, 200));
             JTable table = new JTable(data[i], columns[i]);
             setTableSize(table, widths[i]);
             table.setEnabled(false);

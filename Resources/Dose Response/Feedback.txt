@@ -1,5 +1,6 @@
-Drawing the graph shows a correlation between
-the concentration and the affected specimen
+Drawing the graph shows a correlation
+between the concentration and
+the affected specimen.
 Using these one can see that the EC50 and
 LC50 are near the 5 mM and 0.15 mM as
 used in the picture sets.

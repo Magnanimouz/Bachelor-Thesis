@@ -34,7 +34,7 @@ public class Window extends JFrame {
         this.window.setSize(1600, 900);
         this.main = new JPanel(formation);
         this.main.setBackground(Color.WHITE);
-        this.main.setPreferredSize(new Dimension(1500, 800));
+        this.main.setPreferredSize(new Dimension(1600, 800));
         this.constraints = new GridBagConstraints();
         this.constraints.insets = new Insets(20, 20, 20, 20);
         JScrollPane scrollable = new JScrollPane(this.main, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -273,8 +273,7 @@ public class Window extends JFrame {
             Scanner scan = new Scanner(new File("./Resources/Dose Response/Feedback.txt"));
             String feedback = scan.useDelimiter("\\A").next();
             scan.close();
-            JTextArea info = setShowText("Feedback", false, 350, 300);
-            info.setPreferredSize(new Dimension(350, 250));
+            JTextArea info = setShowText("Feedback", false, 250, 300);
             System.out.println(feedback);
             background.add(info, constraints);
         } catch (FileNotFoundException e) {e.printStackTrace();}
